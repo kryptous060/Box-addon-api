@@ -20,6 +20,11 @@ jobs:
           git submodule update --init --recursive
         working-directory: .
 
+      - name: Debug Directory Structure
+        run: |
+          ls -R
+        working-directory: Android
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
