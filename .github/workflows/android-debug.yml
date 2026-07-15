@@ -15,7 +15,9 @@ jobs:
           submodules: recursive
 
       - name: Initialize submodules
-        run: git submodule update --init --recursive
+        run: |
+          git submodule sync
+          git submodule update --init --recursive
         working-directory: .
 
       - name: Set up JDK
