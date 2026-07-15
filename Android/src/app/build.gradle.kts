@@ -131,6 +131,12 @@ dependencies {
   implementation(libs.androidx.material3.adaptive.navigation.suite)
   implementation(libs.androidx.material3.window.size)
 
+  // Box: Ktor server
+  implementation(libs.ktor.server.core)
+  implementation(libs.ktor.server.cio)
+  implementation(libs.ktor.server.content.negotiation)
+  implementation(libs.ktor.serialization.kotlinx.json)
+
   kapt(libs.hilt.android.compiler)
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

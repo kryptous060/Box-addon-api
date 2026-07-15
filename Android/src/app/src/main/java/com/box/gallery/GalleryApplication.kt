@@ -17,6 +17,8 @@
 package com.box.gallery
 
 import android.app.Application
+import android.content.Intent
+import com.google.ai.edge.gallery.service.BoxApiServer
 import com.google.ai.edge.gallery.data.DataStoreRepository
 import com.google.ai.edge.gallery.security.OfflineMode
 import com.google.ai.edge.gallery.security.SecurityAuditLog
@@ -32,6 +34,9 @@ class GalleryApplication : Application() {
 
   override fun onCreate() {
     super.onCreate()
+
+    // Start API server
+    startService(Intent(this, BoxApiServer::class.java))
 
     // Load saved theme.
     ThemeSettings.themeOverride.value = dataStoreRepository.readTheme()

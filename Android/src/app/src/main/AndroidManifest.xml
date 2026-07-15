@@ -145,6 +145,12 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name="com.google.ai.edge.gallery.service.BoxApiServer"
+            android:exported="false"
+            android:foregroundServiceType="dataSync">
+        </service>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="gallery_high_priority_push_channel" />
