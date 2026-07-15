@@ -1,0 +1,60 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 3D Isometric Box with monochrome design and depth -->
+    
+    <!-- Top face (lightest) -->
+    <path
+        android:fillColor="#E0E0E0"
+        android:pathData="M54,20 L78,35 L54,50 L30,35 Z" />
+    
+    <!-- Left face (medium) -->
+    <path
+        android:fillColor="#B0B0B0"
+        android:pathData="M30,35 L30,65 L54,80 L54,50 Z" />
+    
+    <!-- Right face (dark) -->
+    <path
+        android:fillColor="#808080"
+        android:pathData="M54,50 L54,80 L78,65 L78,35 Z" />
+    
+    <!-- Top face depth lines for 3D effect -->
+    <path
+        android:fillColor="#F0F0F0"
+        android:pathData="M54,25 L73,37 L54,49 L35,37 Z" />
+    
+    <!-- Left face depth lines -->
+    <path
+        android:fillColor="#909090"
+        android:pathData="M35,40 L35,60 L54,72 L54,52 Z" />
+    
+    <!-- Right face depth lines -->
+    <path
+        android:fillColor="#606060"
+        android:pathData="M54,52 L54,72 L73,60 L73,40 Z" />
+    
+    <!-- Highlight edges for extra depth -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,20 L54,25 L35,37 L30,35 Z" />
+    
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,20 L54,25 L73,37 L78,35 Z" />
+    
+    <!-- Shadow edges -->
+    <path
+        android:fillColor="#404040"
+        android:pathData="M30,65 L35,60 L35,40 L30,35 Z" />
+    
+    <path
+        android:fillColor="#404040"
+        android:pathData="M78,35 L73,40 L73,60 L78,65 Z" />
+    
+    <!-- Bottom shadow -->
+    <path
+        android:fillColor="#303030"
+        android:pathData="M35,60 L54,72 L73,60 L54,48 Z" />
+</vector>
