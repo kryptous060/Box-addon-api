@@ -23,11 +23,11 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-        working-directory: Android
+        working-directory: Android/src
 
       - name: Build Debug APK
         run: ./gradlew :app:assembleDebug
-        working-directory: Android
+        working-directory: Android/src
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
