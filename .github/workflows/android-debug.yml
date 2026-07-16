@@ -38,9 +38,9 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          # The keystore itself will be base64 encoded as a secret, 
-          # decoded in a previous step if needed.
-          # For a permanent debug key, the standard debug keystore is 
-          # typically in ~/.android/debug.keystore.
-          # This workflow assumes you're using the standard Gradle debug config
-          # or overriding it.
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: Android/src/app/build/outputs/apk/debug/app-debug.apk
