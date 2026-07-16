@@ -43,6 +43,7 @@ function(build_library target_name)
             ${GGML_DIR}/src
             ${GGML_DIR}/src/ggml-cpu
             ${LLAMA_DIR}/include
+            ${LLAMA_DIR}/common
             ${VENDOR_DIR}
     )
     target_compile_options(
