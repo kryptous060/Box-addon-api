@@ -53,7 +53,7 @@ class BoxApiServer : Service() {
     @Inject lateinit var modelManagerService: ModelManagerService
     @Inject lateinit var modelManagerViewModel: com.google.ai.edge.gallery.ui.modelmanager.ModelManagerViewModel
 
-    private lateinit var server: EmbeddedServer<CIOEngine, CIOApplicationEngine.Configuration>
+    private lateinit var server: EmbeddedServer<CIOApplicationEngine, CIOApplicationEngine.Configuration>
     private val serviceScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate() {
