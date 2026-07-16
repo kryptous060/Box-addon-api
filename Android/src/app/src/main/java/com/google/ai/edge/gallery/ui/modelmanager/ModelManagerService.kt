@@ -57,6 +57,22 @@ class ModelManagerService @Inject constructor(
 
     fun getActiveModel(instanceId: String): Model? = activeModels[instanceId]
 
+    fun setOrchestrationMode(mode: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                java.net.URL("http://localhost:8080/set-orchestration-mode")
+                    .openConnection().apply {
+                        doOutput = true
+                        setRequestProperty("Content-Type", "application/json")
+                        outputStream.use { it.write("{\"orchestratorInstanceId\":\"$mode\"}".toByteArray()) }
+                        inputStream.bufferedReader().use { it.readText() }
+                    }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to set orchestration mode", e)
+            }
+        }
+    }
+
     fun initializeModel(
         instanceId: String,
         task: Task,

@@ -193,6 +193,7 @@ constructor(
   val dataStoreRepository: DataStoreRepository,
   private val lifecycleProvider: AppLifecycleProvider,
   private val customTasks: Set<@JvmSuppressWildcards CustomTask>,
+  private val modelManagerService: ModelManagerService,
   @ApplicationContext private val context: Context,
 ) : ViewModel() {
   private val externalFilesDir = context.getExternalFilesDir(null)
@@ -201,6 +202,10 @@ constructor(
 
   val authService = AuthorizationService(context)
   var curAccessToken: String = ""
+
+  fun setOrchestrationMode(mode: String) {
+    modelManagerService.setOrchestrationMode(mode)
+  }
 
   override fun onCleared() {
     authService.dispose()

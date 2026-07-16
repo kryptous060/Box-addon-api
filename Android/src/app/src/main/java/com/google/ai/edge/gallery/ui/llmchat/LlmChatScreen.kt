@@ -58,11 +58,12 @@ import com.google.ai.edge.gallery.ui.theme.emptyStateContent
 import com.google.ai.edge.gallery.ui.theme.emptyStateTitle
 
 private const val TAG = "AGLlmChatScreen"
-
 @Composable
 fun LlmChatScreen(
   modelManagerViewModel: ModelManagerViewModel,
   navigateUp: () -> Unit,
+// ...
+
   modifier: Modifier = Modifier,
   taskId: String = BuiltInTaskId.LLM_CHAT,
   onFirstToken: (Model) -> Unit = {},
@@ -308,6 +309,12 @@ fun ChatViewWrapper(
     showImagePicker = showImagePicker,
     emptyStateComposable = emptyStateComposable,
     aboveInputComposable = { model ->
+      // Orchestration Toggle
+      Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.Center) {
+          androidx.compose.material3.Button(onClick = { modelManagerViewModel.setOrchestrationMode("comm") }) { Text("Orchestrate: Comm") }
+          androidx.compose.material3.Spacer(modifier = Modifier.padding(4.dp))
+          androidx.compose.material3.Button(onClick = { modelManagerViewModel.setOrchestrationMode("coder") }) { Text("Orchestrate: Coder") }
+      }
       ContextWindowIndicator(model = model, viewModel = viewModel)
       aboveInputComposable(model)
     },
