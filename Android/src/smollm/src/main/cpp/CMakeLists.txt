@@ -29,11 +29,13 @@ target_link_options(
 )
 
 function(build_library target_name)
+    file(GLOB COMMON_SOURCES "${COMMON_DIR}/*.cpp")
     add_library(
             ${target_name}
             SHARED
             LLMInference.cpp
             smollm.cpp
+            ${COMMON_SOURCES}
     )
     target_include_directories(
             ${target_name}
@@ -58,7 +60,7 @@ function(build_library target_name)
     )
     target_link_libraries(
             ${target_name}
-            android log llama llama-common
+            android log llama
     )
     target_link_options(
             ${target_name}
