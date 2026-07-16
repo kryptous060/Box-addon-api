@@ -65,11 +65,27 @@ class BoxApiServer : Service() {
                 post("/chat") {
                     val request = call.receive<ChatRequest>()
                     val model = modelManagerService.getActiveModel(request.instanceId)
+                    
                     if (model?.instance is LlmChatViewModelBase) {
                         val chatViewModel = model.instance as LlmChatViewModelBase
-                        // Use suspend function to await response
                         val response = chatViewModel.generateResponseAsync(model, request.message)
-                        call.respond(HttpStatusCode.OK, response)
+                        
+                        // Orchestration Logic: Detect delegation signal
+                        if (request.instanceId == "comm" && response.contains("[DELEGATE_TO_CODER]")) {
+                            val rephrasedPrompt = response.substringAfter("[DELEGATE_TO_CODER]").trim()
+                            
+                            // Retrieve the coder model
+                            val coderModel = modelManagerService.getActiveModel("coder")
+                            if (coderModel?.instance is LlmChatViewModelBase) {
+                                val coderViewModel = coderModel.instance as LlmChatViewModelBase
+                                val coderResponse = coderViewModel.generateResponseAsync(coderModel, rephrasedPrompt)
+                                call.respond(HttpStatusCode.OK, "Coder output: $coderResponse")
+                            } else {
+                                call.respond(HttpStatusCode.BadRequest, "Coder model not loaded")
+                            }
+                        } else {
+                            call.respond(HttpStatusCode.OK, response)
+                        }
                     } else {
                         call.respond(HttpStatusCode.BadRequest, "Model instance not found or not an LLM")
                     }
