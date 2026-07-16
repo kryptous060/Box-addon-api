@@ -67,8 +67,9 @@ class BoxApiServer : Service() {
                     val model = modelManagerService.getActiveModel(request.instanceId)
                     if (model?.instance is LlmChatViewModelBase) {
                         val chatViewModel = model.instance as LlmChatViewModelBase
-                        chatViewModel.generateResponse(model, request.message, onError = {})
-                        call.respond(HttpStatusCode.OK, "Chat message sent to ${request.instanceId}")
+                        // Use suspend function to await response
+                        val response = chatViewModel.generateResponseAsync(model, request.message)
+                        call.respond(HttpStatusCode.OK, response)
                     } else {
                         call.respond(HttpStatusCode.BadRequest, "Model instance not found or not an LLM")
                     }
@@ -83,8 +84,9 @@ class BoxApiServer : Service() {
                             steps = 20,
                             cfgScale = 7.5f,
                         )
-                        serviceScope.launch { sd.generateImage(params).collect {} }
-                        call.respond(HttpStatusCode.OK, "Image generation triggered for ${request.instanceId}")
+                        // Use suspend function to await generation
+                        val image = sd.generateImageAsync(params)
+                        call.respond(HttpStatusCode.OK, "Image generation complete for ${request.instanceId}")
                     } else {
                         call.respond(HttpStatusCode.BadRequest, "Model instance not found or not an Image Gen model")
                     }
