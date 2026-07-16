@@ -39,13 +39,13 @@ import kotlinx.serialization.Serializable
 import javax.inject.Inject
 
 @Serializable
-data class ChatRequest(val message: String, val modelName: String)
+data class ChatRequest(val message: String, val instanceId: String)
 
 @Serializable
-data class GenerateImageRequest(val prompt: String, val modelName: String)
+data class GenerateImageRequest(val prompt: String, val instanceId: String)
 
 @Serializable
-data class LoadModelRequest(val modelName: String, val taskId: String)
+data class LoadModelRequest(val modelName: String, val taskId: String, val instanceId: String)
 
 @AndroidEntryPoint
 class BoxApiServer : Service() {
@@ -64,31 +64,29 @@ class BoxApiServer : Service() {
             routing {
                 post("/chat") {
                     val request = call.receive<ChatRequest>()
-                    val model = modelManagerService.getModelByName(request.modelName)
+                    val model = modelManagerService.getActiveModel(request.instanceId)
                     if (model?.instance is LlmChatViewModelBase) {
                         val chatViewModel = model.instance as LlmChatViewModelBase
-                        // Simplified chat execution
                         chatViewModel.generateResponse(model, request.message, onError = {})
-                        call.respond(HttpStatusCode.OK, "Chat message sent to ${request.modelName}")
+                        call.respond(HttpStatusCode.OK, "Chat message sent to ${request.instanceId}")
                     } else {
-                        call.respond(HttpStatusCode.BadRequest, "Model not loaded or not an LLM")
+                        call.respond(HttpStatusCode.BadRequest, "Model instance not found or not an LLM")
                     }
                 }
                 post("/generate-image") {
                     val request = call.receive<GenerateImageRequest>()
-                    val model = modelManagerService.getModelByName(request.modelName)
+                    val model = modelManagerService.getActiveModel(request.instanceId)
                     if (model?.instance is StableDiffusion) {
                         val sd = model.instance as StableDiffusion
-                        // Simplified image generation execution
                         val params = StableDiffusion.GenerationParams(
                             prompt = request.prompt,
                             steps = 20,
                             cfgScale = 7.5f,
                         )
                         serviceScope.launch { sd.generateImage(params).collect {} }
-                        call.respond(HttpStatusCode.OK, "Image generation triggered for ${request.modelName}")
+                        call.respond(HttpStatusCode.OK, "Image generation triggered for ${request.instanceId}")
                     } else {
-                        call.respond(HttpStatusCode.BadRequest, "Model not loaded or not an Image Gen model")
+                        call.respond(HttpStatusCode.BadRequest, "Model instance not found or not an Image Gen model")
                     }
                 }
                 post("/load-llm") {
@@ -96,8 +94,8 @@ class BoxApiServer : Service() {
                     val model = modelManagerService.getModelByName(request.modelName)
                     val task = modelManagerService.getTaskById(request.taskId)
                     if (model != null && task != null) {
-                        modelManagerService.initializeModel(task, model, serviceScope)
-                        call.respond(HttpStatusCode.OK, "Loading LLM model: ${request.modelName}")
+                        modelManagerService.initializeModel(request.instanceId, task, model, serviceScope)
+                        call.respond(HttpStatusCode.OK, "Loading model: ${request.modelName} as ${request.instanceId}")
                     } else {
                         call.respond(HttpStatusCode.NotFound, "Model or Task not found")
                     }
@@ -107,8 +105,8 @@ class BoxApiServer : Service() {
                     val model = modelManagerService.getModelByName(request.modelName)
                     val task = modelManagerService.getTaskById(request.taskId)
                     if (model != null && task != null) {
-                        modelManagerService.initializeModel(task, model, serviceScope)
-                        call.respond(HttpStatusCode.OK, "Loading image model: ${request.modelName}")
+                        modelManagerService.initializeModel(request.instanceId, task, model, serviceScope)
+                        call.respond(HttpStatusCode.OK, "Loading model: ${request.modelName} as ${request.instanceId}")
                     } else {
                         call.respond(HttpStatusCode.NotFound, "Model or Task not found")
                     }

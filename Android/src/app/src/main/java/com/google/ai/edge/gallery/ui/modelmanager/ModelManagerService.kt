@@ -27,6 +27,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentHashMap
 
 private const val TAG = "ModelManagerService"
 
@@ -35,6 +36,9 @@ class ModelManagerService @Inject constructor(
     @ApplicationContext private val context: Context,
     private val customTasks: Set<@JvmSuppressWildcards CustomTask>
 ) {
+
+    // Store active models by a unique instanceId
+    private val activeModels = ConcurrentHashMap<String, Model>()
 
     fun getTaskById(id: String): Task? {
         return customTasks.map { it.task }.find { it.id == id }
@@ -51,32 +55,30 @@ class ModelManagerService @Inject constructor(
         return null
     }
 
-    fun getCustomTaskByTaskId(id: String): CustomTask? {
-        return customTasks.toList().find { it.task.id == id }
-    }
+    fun getActiveModel(instanceId: String): Model? = activeModels[instanceId]
 
     fun initializeModel(
+        instanceId: String,
         task: Task,
         model: Model,
         coroutineScope: CoroutineScope,
         onDone: () -> Unit = {},
     ) {
         coroutineScope.launch(Dispatchers.Default) {
-            // Start initialization.
-            Log.d(TAG, "Initializing model '${model.name}'...")
+            Log.d(TAG, "Initializing model '${model.name}' for instance '$instanceId'...")
             model.initializing = true
             
             val onDoneFn: (error: String) -> Unit = { error ->
                 model.initializing = false
                 if (model.instance != null) {
-                    Log.d(TAG, "Model '${model.name}' initialized successfully")
+                    activeModels[instanceId] = model
+                    Log.d(TAG, "Model '${model.name}' initialized successfully for '$instanceId'")
                     onDone()
                 } else if (error.isNotEmpty()) {
-                    Log.d(TAG, "Model '${model.name}' failed to initialize: $error")
+                    Log.e(TAG, "Model '${model.name}' failed to initialize: $error")
                 }
             }
 
-            // Call the model initialization function.
             getCustomTaskByTaskId(id = task.id)
                 ?.initializeModelFn(
                     context = context,
@@ -85,5 +87,9 @@ class ModelManagerService @Inject constructor(
                     onDone = onDoneFn,
                 )
         }
+    }
+
+    fun getCustomTaskByTaskId(id: String): CustomTask? {
+        return customTasks.toList().find { it.task.id == id }
     }
 }
