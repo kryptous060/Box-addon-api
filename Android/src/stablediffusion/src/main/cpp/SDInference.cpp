@@ -29,7 +29,7 @@ Java_com_google_ai_edge_gallery_stablediffusion_StableDiffusion_loadModelNative(
     sd_ctx_params_init(&params);
     params.model_path = path;
     params.n_threads = (int)nThreads;
-    params.vae_decode_only = true;
+    // params.vae_decode_only = true; // Removed, member does not exist in newer API
     params.enable_mmap = true;
 
     sd_set_log_callback([](sd_log_level_t level, const char* text, void*) {
@@ -88,19 +88,23 @@ Java_com_google_ai_edge_gallery_stablediffusion_StableDiffusion_generateImageNat
     LOGI("Generating image: %dx%d, steps=%d, cfg=%.1f, seed=%lld",
          width, height, steps, cfgScale, (long long)seed);
 
-    sd_image_t* result = generate_image(ctx, &genParams);
+    sd_image_t* images_out = nullptr;
+    int num_images_out = 0;
+    bool success = generate_image(ctx, &genParams, &images_out, &num_images_out);
 
     env->ReleaseStringUTFChars(prompt, promptStr);
     env->ReleaseStringUTFChars(negPrompt, negStr);
 
-    if (!result) {
-        LOGE("generate_image returned null");
+    if (!success || num_images_out == 0 || !images_out) {
+        LOGE("generate_image failed or returned no images");
         return nullptr;
     }
 
+    sd_image_t* result = &images_out[0];
+
     if (!result->data) {
         LOGE("generate_image returned image with null data");
-        delete[] result;
+        free_sd_images(images_out, num_images_out);
         return nullptr;
     }
 
@@ -113,9 +117,7 @@ Java_com_google_ai_edge_gallery_stablediffusion_StableDiffusion_generateImageNat
     env->SetByteArrayRegion(byteArr, 0, dataSize,
                             reinterpret_cast<const jbyte*>(result->data));
 
-    // Free using delete[] since stable-diffusion.cpp uses new[]
-    delete[] result->data;
-    delete[] result;
+    free_sd_images(images_out, num_images_out);
 
     return byteArr;
 }
