@@ -51,6 +51,9 @@ data class LoadModelRequest(val modelName: String, val taskId: String, val insta
 class BoxApiServer : Service() {
 
     @Inject lateinit var modelManagerService: ModelManagerService
+    
+    // Tracks which instance is currently the orchestrator
+    private var orchestratorInstanceId: String = "comm"
 
     private lateinit var server: EmbeddedServer<CIOApplicationEngine, CIOApplicationEngine.Configuration>
     private val serviceScope = CoroutineScope(Dispatchers.IO)
@@ -62,26 +65,34 @@ class BoxApiServer : Service() {
                 json()
             }
             routing {
+                post("/set-orchestration-mode") {
+                    val request = call.receive<Map<String, String>>()
+                    orchestratorInstanceId = request["orchestratorInstanceId"] ?: "comm"
+                    call.respond(HttpStatusCode.OK, "Orchestration mode set to $orchestratorInstanceId")
+                }
                 post("/chat") {
                     val request = call.receive<ChatRequest>()
-                    val model = modelManagerService.getActiveModel(request.instanceId)
+                    val orchestratorId = orchestratorInstanceId
+                    val specialistId = if (orchestratorId == "comm") "coder" else "comm"
+                    
+                    val modelIdToUse = if (request.instanceId == "primary") orchestratorId else request.instanceId
+                    val model = modelManagerService.getActiveModel(modelIdToUse)
                     
                     if (model?.instance is LlmChatViewModelBase) {
                         val chatViewModel = model.instance as LlmChatViewModelBase
                         val response = chatViewModel.generateResponseAsync(model, request.message)
                         
                         // Orchestration Logic: Detect delegation signal
-                        if (request.instanceId == "comm" && response.contains("[DELEGATE_TO_CODER]")) {
-                            val rephrasedPrompt = response.substringAfter("[DELEGATE_TO_CODER]").trim()
+                        if (modelIdToUse == orchestratorId && response.contains("[DELEGATE_TO_SPECIALIST]")) {
+                            val rephrasedPrompt = response.substringAfter("[DELEGATE_TO_SPECIALIST]").trim()
+                            val specialistModel = modelManagerService.getActiveModel(specialistId)
                             
-                            // Retrieve the coder model
-                            val coderModel = modelManagerService.getActiveModel("coder")
-                            if (coderModel?.instance is LlmChatViewModelBase) {
-                                val coderViewModel = coderModel.instance as LlmChatViewModelBase
-                                val coderResponse = coderViewModel.generateResponseAsync(coderModel, rephrasedPrompt)
-                                call.respond(HttpStatusCode.OK, "Coder output: $coderResponse")
+                            if (specialistModel?.instance is LlmChatViewModelBase) {
+                                val specialistViewModel = specialistModel.instance as LlmChatViewModelBase
+                                val specialistResponse = specialistViewModel.generateResponseAsync(specialistModel, rephrasedPrompt)
+                                call.respond(HttpStatusCode.OK, "Specialist output: $specialistResponse")
                             } else {
-                                call.respond(HttpStatusCode.BadRequest, "Coder model not loaded")
+                                call.respond(HttpStatusCode.BadRequest, "Specialist model ($specialistId) not loaded")
                             }
                         } else {
                             call.respond(HttpStatusCode.OK, response)
