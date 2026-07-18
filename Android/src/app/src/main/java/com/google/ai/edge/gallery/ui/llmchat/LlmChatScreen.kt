@@ -313,7 +313,7 @@ fun ChatViewWrapper(
       // Orchestration Toggle
       Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.Center) {
           androidx.compose.material3.Button(onClick = { modelManagerViewModel.setOrchestrationMode("comm") }) { Text("Orchestrate: Comm") }
-          androidx.compose.material3.Spacer(modifier = Modifier.padding(4.dp))
+          Spacer(modifier = Modifier.padding(4.dp))
           androidx.compose.material3.Button(onClick = { modelManagerViewModel.setOrchestrationMode("coder") }) { Text("Orchestrate: Coder") }
       }
       ContextWindowIndicator(model = model, viewModel = viewModel)
