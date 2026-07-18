@@ -147,7 +147,7 @@ class BoxApiServer : Service() {
 
                     if (model != null && task != null) {
                         // Execute NPU load in background
-                        CoroutineScope(Dispatchers.Default).launch {
+                        CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 modelManagerService.initializeModel(request.instanceId, task, model, serviceScope)
                             } catch (e: Exception) {
@@ -158,6 +158,15 @@ class BoxApiServer : Service() {
                         call.respond(HttpStatusCode.Accepted, "{\"status\": \"initializing_in_background\"}")
                     } else {
                         call.respond(HttpStatusCode.NotFound, mapOf("error" to "Model or Task not found"))
+                    }
+                }
+                get("/model-status/{instanceId}") {
+                    val instanceId = call.parameters["instanceId"] ?: ""
+                    val model = modelManagerService.getActiveModel(instanceId)
+                    if (model != null) {
+                        call.respond(HttpStatusCode.OK, mapOf("status" to "ready"))
+                    } else {
+                        call.respond(HttpStatusCode.OK, mapOf("status" to "loading"))
                     }
                 }
                 post("/load-image-model") {

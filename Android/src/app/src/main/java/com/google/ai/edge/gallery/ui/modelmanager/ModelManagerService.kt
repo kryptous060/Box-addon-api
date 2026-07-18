@@ -80,7 +80,7 @@ class ModelManagerService @Inject constructor(
         coroutineScope: CoroutineScope,
         onDone: () -> Unit = {},
     ) {
-        coroutineScope.launch(Dispatchers.Default) {
+        coroutineScope.launch(Dispatchers.IO) {
             Log.d(TAG, "Initializing model '${model.name}' for instance '$instanceId'...")
             model.initializing = true
             
