@@ -409,8 +409,11 @@ open class LlmChatViewModelBase() : ChatViewModel() {
     }
   }
 
+  suspend fun generateResponseAsync(model: Model, input: String): String {
+    throw NotImplementedError("generateResponseAsync is not implemented yet")
+  }
+
   fun stopResponse(model: Model) {
-    Log.d(TAG, "Stopping response for model ${model.name}...")
     if (getLastMessage(model = model) is ChatMessageLoading) {
       removeLastMessage(model = model)
     }

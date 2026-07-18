@@ -104,6 +104,10 @@ class StableDiffusion {
         }
     }
 
+    suspend fun generateImageAsync(params: GenerationParams): Bitmap? {
+        throw NotImplementedError("generateImageAsync is not implemented yet")
+    }
+
     fun freeModel() {
         if (contextHandle != 0L) {
             freeContextNative(contextHandle)
