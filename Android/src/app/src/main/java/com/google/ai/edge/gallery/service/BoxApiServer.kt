@@ -146,9 +146,9 @@ class BoxApiServer : Service() {
                     val task = modelManagerService.getTaskById(request.taskId)
                     if (model != null && task != null) {
                         modelManagerService.initializeModel(request.instanceId, task, model, serviceScope)
-                        call.respond(HttpStatusCode.OK, "Loading model: ${request.modelName} as ${request.instanceId}")
+                        call.respond(HttpStatusCode.OK, mapOf("status" to "loading", "model" to request.modelName))
                     } else {
-                        call.respond(HttpStatusCode.NotFound, "Model or Task not found")
+                        call.respond(HttpStatusCode.NotFound, mapOf("error" to "Model or Task not found"))
                     }
                 }
                 post("/load-image-model") {
@@ -157,9 +157,9 @@ class BoxApiServer : Service() {
                     val task = modelManagerService.getTaskById(request.taskId)
                     if (model != null && task != null) {
                         modelManagerService.initializeModel(request.instanceId, task, model, serviceScope)
-                        call.respond(HttpStatusCode.OK, "Loading model: ${request.modelName} as ${request.instanceId}")
+                        call.respond(HttpStatusCode.OK, mapOf("status" to "loading", "model" to request.modelName))
                     } else {
-                        call.respond(HttpStatusCode.NotFound, "Model or Task not found")
+                        call.respond(HttpStatusCode.NotFound, mapOf("error" to "Model or Task not found"))
                     }
                 }
             }
