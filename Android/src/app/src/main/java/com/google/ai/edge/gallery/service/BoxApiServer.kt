@@ -65,6 +65,22 @@ class BoxApiServer : Service() {
                 json()
             }
             routing {
+                post("/v1beta/models/{modelName}:streamGenerateContent") {
+                    val modelName = call.parameters["modelName"]
+                    val request = call.receive<ChatRequest>()
+                    
+                    // Route to primary model regardless of requested modelName
+                    val modelIdToUse = "primary"
+                    val model = modelManagerService.getActiveModel(modelIdToUse)
+                    
+                    if (model?.instance is LlmChatViewModelBase) {
+                        val chatViewModel = model.instance as LlmChatViewModelBase
+                        val response = chatViewModel.generateResponseAsync(model, request.message)
+                        call.respond(HttpStatusCode.OK, response)
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "No active primary model found to handle $modelName")
+                    }
+                }
                 post("/set-orchestration-mode") {
                     val request = call.receive<Map<String, String>>()
                     orchestratorInstanceId = request["orchestratorInstanceId"] ?: "comm"
