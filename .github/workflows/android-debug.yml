@@ -31,6 +31,10 @@ jobs:
         run: chmod +x gradlew
         working-directory: Android/src
 
+      - name: Remove strict toolchain constraints
+        run: rm -f gradle/gradle-daemon-jvm.properties
+        working-directory: Android/src
+
       - name: Build Debug APK
         run: ./gradlew :app:assembleDebug
         working-directory: Android/src
