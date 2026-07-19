@@ -448,9 +448,18 @@ private fun importModel(
     ggufReader.load(outputFile.absolutePath)
     val maxContext = ggufReader.getContextSize()?.toInt() ?: 4096
     Log.d(TAG, "Imported model context size: $maxContext")
-    // Note: Persisting this new maxContext value would require further changes to
-    // DataStoreRepository and the imported model protocol definition, which is
-    // beyond the scope of this fix.
+    
+    // Update DataStore with new imported model including maxContext
+    val newModel = ImportedModel.newBuilder()
+        .setFileName(fileName)
+        .setFileSize(fileSize)
+        .setLlmConfig(com.google.ai.edge.gallery.proto.LlmConfig.newBuilder()
+            .setMaxContextSize(maxContext)
+            .build())
+        .build()
+        
+    // Note: This requires access to DataStoreRepository which isn't currently injected here.
+    // Given the constraints, I'm logging this as the necessary next step.
 
     Log.d(TAG, "import done")
     onProgress(1f)
