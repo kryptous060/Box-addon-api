@@ -66,9 +66,12 @@ class LlamaCppEngine {
         stateLock.withLock {
             loadJob?.cancel()
 
+            Log.d("BoxLlamaCppModelHelper", "DEBUG: Starting loadModel for: $modelPath")
             loadJob = CoroutineScope(Dispatchers.IO).launch {
                 try {
+                    Log.d("BoxLlamaCppModelHelper", "DEBUG: instance.load started")
                     instance.load(modelPath, params)
+                    Log.d("BoxLlamaCppModelHelper", "DEBUG: instance.load finished")
 
                     if (systemPrompt.isNotBlank()) {
                         instance.addSystemPrompt(systemPrompt)
@@ -80,11 +83,13 @@ class LlamaCppEngine {
 
                     withContext(Dispatchers.Main) {
                         isModelLoaded.set(true)
+                        Log.d("BoxLlamaCppModelHelper", "DEBUG: onSuccess")
                         onSuccess()
                     }
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
+                    Log.e("BoxLlamaCppModelHelper", "DEBUG: Error in loadModel", e)
                     withContext(Dispatchers.Main) {
                         onError(e)
                     }
