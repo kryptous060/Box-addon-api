@@ -19,8 +19,10 @@ package com.google.ai.edge.gallery.ui.modelmanager
 import android.content.Context
 import android.util.Log
 import com.google.ai.edge.gallery.customtasks.common.CustomTask
+import com.google.ai.edge.gallery.data.DataStoreRepository
 import com.google.ai.edge.gallery.data.Model
 import com.google.ai.edge.gallery.data.Task
+import com.google.ai.edge.gallery.data.RuntimeType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,13 +30,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
+import java.io.File
 
 private const val TAG = "ModelManagerService"
 
 @Singleton
 class ModelManagerService @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val customTasks: Set<@JvmSuppressWildcards CustomTask>
+    private val customTasks: Set<@JvmSuppressWildcards CustomTask>,
+    private val dataStoreRepository: DataStoreRepository
 ) {
 
     // Store active models by a unique instanceId
@@ -44,7 +48,23 @@ class ModelManagerService @Inject constructor(
         return customTasks.map { it.task }.find { it.id == id }
     }
 
+    private fun getImportedModels(): List<Model> {
+        // Need to replicate createModelFromImportedModelInfo logic or expose it properly.
+        // For simplicity, assuming a helper exists or re-implementing basic logic.
+        return dataStoreRepository.readImportedModels().map { info ->
+            Model(
+                name = info.fileName,
+                url = "",
+                sizeInBytes = info.fileSize,
+                downloadFileName = "imports/${info.fileName}",
+                imported = true,
+                runtimeType = RuntimeType.LITERT_LM,
+            )
+        }
+    }
+
     fun getModelByName(name: String): Model? {
+        // Check custom tasks
         for (customTask in customTasks) {
             for (model in customTask.task.models) {
                 if (model.name == name) {
@@ -52,7 +72,8 @@ class ModelManagerService @Inject constructor(
                 }
             }
         }
-        return null
+        // Check imported
+        return getImportedModels().find { it.name == name }
     }
 
     fun getActiveModel(instanceId: String): Model? = activeModels[instanceId]
