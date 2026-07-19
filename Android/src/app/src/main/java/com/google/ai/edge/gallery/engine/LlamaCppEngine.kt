@@ -71,11 +71,12 @@ class LlamaCppEngine {
                 Log.d("BoxLlamaCppModelHelper", "DEBUG: Starting loadModel for: $modelPath")
                 loadJob = launch {
                     try {
-                        Log.d("BoxLlamaCppModelHelper", "DEBUG: instance.load started")
+                        Log.d("BoxLlamaCppModelHelper", "DEBUG: instance.load about to be called for: $modelPath")
                         instance.load(modelPath, params)
-                        Log.d("BoxLlamaCppModelHelper", "DEBUG: instance.load finished")
+                        Log.d("BoxLlamaCppModelHelper", "DEBUG: instance.load finished successfully")
 
                         if (systemPrompt.isNotBlank()) {
+                            Log.d("BoxLlamaCppModelHelper", "DEBUG: Adding system prompt")
                             instance.addSystemPrompt(systemPrompt)
                         }
 
