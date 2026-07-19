@@ -66,7 +66,7 @@ class LlamaCppEngine {
         stateLock.withLock {
             loadJob?.cancel()
 
-            loadJob = CoroutineScope(Dispatchers.Default).launch {
+            loadJob = CoroutineScope(Dispatchers.IO).launch {
                 try {
                     instance.load(modelPath, params)
 
