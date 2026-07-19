@@ -141,29 +141,33 @@ class BoxApiServer : Service() {
                     }
                 }
                 post("/load-llm") {
-                    println("DEBUG: Entering /load-llm route")
+                    println("DEBUG: Entering /load-llm")
                     val request = call.receive<LoadModelRequest>()
-                    println("DEBUG: Received /load-llm request for ${request.modelName}")
+                    println("DEBUG: Looking for model: ${request.modelName}, task: ${request.taskId}")
+                    
+                    // Explicitly list all available models for debugging
+                    val allModels = modelManagerService.getAllModels()
+                    println("DEBUG: Currently registered models: ${allModels.map { it.name }}")
+                    
                     val model = modelManagerService.getModelByName(request.modelName)
                     val task = modelManagerService.getTaskById(request.taskId)
 
                     if (model != null && task != null) {
-                        println("DEBUG: Model and Task found, launching background initialization")
-                        // Execute NPU load in background
+                        println("DEBUG: Model and Task found. Attempting initializeModel")
                         serviceScope.launch {
                             try {
                                 println("DEBUG: Calling modelManagerService.initializeModel")
                                 modelManagerService.initializeModel(request.instanceId, task, model, serviceScope)
                                 println("DEBUG: modelManagerService.initializeModel returned")
                             } catch (e: Exception) {
-                                println("NPU Load Failed: ${e.message}")
+                                println("DEBUG: NPU Load Failed: ${e.message}")
+                                e.printStackTrace()
                             }
                         }
-                        // Instantly close connection
-                        println("DEBUG: Responding with Accepted")
+                        println("DEBUG: Responding Accepted")
                         call.respond(HttpStatusCode.Accepted, "{\"status\": \"initializing_in_background\"}")
                     } else {
-                        println("DEBUG: Model or Task not found")
+                        println("DEBUG: Failed to find model or task.")
                         call.respond(HttpStatusCode.NotFound, mapOf("error" to "Model or Task not found"))
                     }
                 }
