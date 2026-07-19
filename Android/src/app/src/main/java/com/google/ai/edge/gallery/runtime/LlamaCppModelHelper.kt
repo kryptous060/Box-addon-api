@@ -13,6 +13,7 @@ import com.google.ai.edge.litertlm.Contents
 import com.google.ai.edge.litertlm.ToolProvider
 import com.jegly.offlineLLM.smollm.SmolLM
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 private const val TAG = "BoxLlamaCppModelHelper"
 
