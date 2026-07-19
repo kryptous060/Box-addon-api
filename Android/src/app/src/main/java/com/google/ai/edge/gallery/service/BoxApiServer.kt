@@ -141,6 +141,7 @@ class BoxApiServer : Service() {
                     }
                 }
                 post("/load-llm") {
+                    println("DEBUG: Entering /load-llm route")
                     val request = call.receive<LoadModelRequest>()
                     println("DEBUG: Received /load-llm request for ${request.modelName}")
                     val model = modelManagerService.getModelByName(request.modelName)
