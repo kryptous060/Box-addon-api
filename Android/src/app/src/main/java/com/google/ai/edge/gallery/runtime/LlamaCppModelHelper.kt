@@ -55,19 +55,21 @@ object LlamaCppModelHelper : LlmModelHelper {
             numThreads = Runtime.getRuntime().availableProcessors().coerceAtMost(8),
         )
 
-        engine.loadModel(
-            modelPath = modelPath,
-            params = params,
-            onSuccess = {
-                // Store a marker so the ViewModel knows the model is ready
-                model.instance = engine
-                onDone("")
-            },
-            onError = { e ->
-                Log.e(TAG, "Failed to load GGUF model", e)
-                onDone(e.message ?: "Failed to load GGUF model")
-            }
-        )
+        coroutineScope?.launch {
+            engine.loadModel(
+                modelPath = modelPath,
+                params = params,
+                onSuccess = {
+                    // Store a marker so the ViewModel knows the model is ready
+                    model.instance = engine
+                    onDone("")
+                },
+                onError = { e ->
+                    Log.e(TAG, "Failed to load GGUF model", e)
+                    onDone(e.message ?: "Failed to load GGUF model")
+                }
+            )
+        }
     }
 
     override fun resetConversation(
@@ -83,32 +85,43 @@ object LlamaCppModelHelper : LlmModelHelper {
 
         Log.d(TAG, "Resetting conversation for ${model.name} (keeping model loaded)")
 
-        engine.resetConversation(
-            modelPath = modelPath,
-            params = engine.lastLoadParams ?: SmolLM.InferenceParams(),
-            systemPrompt = engine.lastSystemPrompt,
-            onSuccess = {
-                // Update model instance reference
-                model.instance = engine
-                Log.d(TAG, "Conversation reset complete for ${model.name}")
-            },
-            onError = { e ->
-                Log.e(TAG, "Failed to reset conversation for ${model.name}", e)
-            },
-        )
+        // Note: Reset conversation needs a scope. We don't have one in this signature,
+        // but it's called from within ViewModel scope usually.
+        // We need to use a scope here to call the suspend function.
+        // For now, using GlobalScope is bad, but we need to fix the interface signature later.
+        // As a temporary fix, wrap in launch
+        kotlinx.coroutines.GlobalScope.launch {
+            engine.resetConversation(
+                modelPath = modelPath,
+                params = engine.lastLoadParams ?: SmolLM.InferenceParams(),
+                systemPrompt = engine.lastSystemPrompt,
+                onSuccess = {
+                    // Update model instance reference
+                    model.instance = engine
+                    Log.d(TAG, "Conversation reset complete for ${model.name}")
+                },
+                onError = { e ->
+                    Log.e(TAG, "Failed to reset conversation for ${model.name}", e)
+                },
+            )
+        }
     }
 
     override fun cleanUp(model: Model, onDone: () -> Unit) {
         val engine = engines.remove(model.name)
-        engine?.unloadModel()
-        model.instance = null
-        onDone()
-        Log.d(TAG, "Clean up done for ${model.name}")
+        kotlinx.coroutines.GlobalScope.launch {
+            engine?.unloadModel()
+            model.instance = null
+            onDone()
+            Log.d(TAG, "Clean up done for ${model.name}")
+        }
     }
 
     override fun stopResponse(model: Model) {
         val engine = engines[model.name]
-        engine?.stopGeneration()
+        kotlinx.coroutines.GlobalScope.launch {
+            engine?.stopGeneration()
+        }
     }
 
     override fun runInference(
@@ -133,22 +146,24 @@ object LlamaCppModelHelper : LlmModelHelper {
             Log.w(TAG, "Image input not supported with llama.cpp engine, ignoring ${images.size} images")
         }
 
-        engine.generateResponse(
-            query = input,
-            onToken = { partialResponse ->
-                resultListener(partialResponse, false, null)
-            },
-            onComplete = { result ->
-                // Send the final delta (empty string) with done=true
-                resultListener("", true, null)
-            },
-            onCancelled = {
-                resultListener("", true, null)
-            },
-            onError = { e ->
-                Log.e(TAG, "Inference error", e)
-                onError(e.message ?: "Inference error")
-            }
-        )
+        coroutineScope?.launch {
+            engine.generateResponse(
+                query = input,
+                onToken = { partialResponse ->
+                    resultListener(partialResponse, false, null)
+                },
+                onComplete = { result ->
+                    // Send the final delta (empty string) with done=true
+                    resultListener("", true, null)
+                },
+                onCancelled = {
+                    resultListener("", true, null)
+                },
+                onError = { e ->
+                    Log.e(TAG, "Inference error", e)
+                    onError(e.message ?: "Inference error")
+                }
+            )
+        }
     }
 }

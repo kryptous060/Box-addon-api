@@ -7,11 +7,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.takeWhile
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import android.util.Log
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import kotlin.time.measureTime
 
 /**
@@ -22,7 +21,7 @@ import kotlin.time.measureTime
 class LlamaCppEngine {
 
     private var instance = SmolLM()
-    private val stateLock = ReentrantLock()
+    private val stateLock = Mutex()
 
     // Track load params for resetConversation
     var lastLoadParams: SmolLM.InferenceParams? = null
@@ -51,7 +50,7 @@ class LlamaCppEngine {
         val contextLengthUsed: Int,
     )
 
-    fun loadModel(
+    suspend fun loadModel(
         modelPath: String,
         params: SmolLM.InferenceParams = SmolLM.InferenceParams(),
         systemPrompt: String = "",
@@ -99,7 +98,7 @@ class LlamaCppEngine {
         }
     }
 
-    fun unloadModel() {
+    suspend fun unloadModel() {
         stateLock.withLock {
             generationJob?.cancel()
             loadJob?.cancel()
@@ -116,7 +115,7 @@ class LlamaCppEngine {
      * Closes the current llama.cpp context and re-opens with the same params.
      * This clears the KV cache and chat history without reloading weights from disk.
      */
-    fun resetConversation(
+    suspend fun resetConversation(
         modelPath: String,
         params: SmolLM.InferenceParams = lastLoadParams ?: SmolLM.InferenceParams(),
         systemPrompt: String = "",
@@ -151,7 +150,7 @@ class LlamaCppEngine {
         }
     }
 
-    fun generateResponse(
+    suspend fun generateResponse(
         query: String,
         onToken: (String) -> Unit,
         onComplete: (GenerationResult) -> Unit,
@@ -263,7 +262,7 @@ class LlamaCppEngine {
         return cleaned.trim()
     }
 
-    fun stopGeneration() {
+    suspend fun stopGeneration() {
         stateLock.withLock {
             generationJob?.cancel()
             isGenerating = false
