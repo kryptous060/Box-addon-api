@@ -442,6 +442,16 @@ private fun importModel(
       inputStream?.close()
       outputStream.close()
     }
+    
+    // Detect context size
+    val ggufReader = com.jegly.offlineLLM.smollm.GGUFReader()
+    ggufReader.load(outputFile.absolutePath)
+    val maxContext = ggufReader.getContextSize()?.toInt() ?: 4096
+    Log.d(TAG, "Imported model context size: $maxContext")
+    // Note: Persisting this new maxContext value would require further changes to
+    // DataStoreRepository and the imported model protocol definition, which is
+    // beyond the scope of this fix.
+
     Log.d(TAG, "import done")
     onProgress(1f)
     onDone()
