@@ -57,6 +57,14 @@ class ModelManagerService @Inject constructor(
 
     fun getActiveModel(instanceId: String): Model? = activeModels[instanceId]
 
+    fun getAllModels(): List<Model> {
+        return customTasks.flatMap { it.task.models }
+    }
+
+    fun getAllTasks(): List<CustomTask> {
+        return customTasks.toList()
+    }
+
     fun setOrchestrationMode(mode: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {

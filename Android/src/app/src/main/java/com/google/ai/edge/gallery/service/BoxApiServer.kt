@@ -176,6 +176,11 @@ class BoxApiServer : Service() {
                         call.respond(HttpStatusCode.OK, mapOf("status" to "loading"))
                     }
                 }
+                get("/debug-models") {
+                    val models = modelManagerService.getAllModels() // Assuming this exists or needs adjustment
+                    val tasks = modelManagerService.getAllTasks() // Assuming this exists or needs adjustment
+                    call.respond(HttpStatusCode.OK, mapOf("models" to models.map { it.name }, "tasks" to tasks.map { it.task.id }))
+                }
                 post("/load-image-model") {
                     val request = call.receive<LoadModelRequest>()
                     val model = modelManagerService.getModelByName(request.modelName)
