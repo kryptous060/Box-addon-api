@@ -142,21 +142,27 @@ class BoxApiServer : Service() {
                 }
                 post("/load-llm") {
                     val request = call.receive<LoadModelRequest>()
+                    println("DEBUG: Received /load-llm request for ${request.modelName}")
                     val model = modelManagerService.getModelByName(request.modelName)
                     val task = modelManagerService.getTaskById(request.taskId)
 
                     if (model != null && task != null) {
+                        println("DEBUG: Model and Task found, launching background initialization")
                         // Execute NPU load in background
-                        CoroutineScope(Dispatchers.IO).launch {
+                        serviceScope.launch {
                             try {
+                                println("DEBUG: Calling modelManagerService.initializeModel")
                                 modelManagerService.initializeModel(request.instanceId, task, model, serviceScope)
+                                println("DEBUG: modelManagerService.initializeModel returned")
                             } catch (e: Exception) {
                                 println("NPU Load Failed: ${e.message}")
                             }
                         }
                         // Instantly close connection
+                        println("DEBUG: Responding with Accepted")
                         call.respond(HttpStatusCode.Accepted, "{\"status\": \"initializing_in_background\"}")
                     } else {
+                        println("DEBUG: Model or Task not found")
                         call.respond(HttpStatusCode.NotFound, mapOf("error" to "Model or Task not found"))
                     }
                 }
