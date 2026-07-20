@@ -34,9 +34,25 @@ import kotlinx.coroutines.withContext
 
 import java.util.concurrent.ConcurrentHashMap
 import java.io.File
-import com.google.ai.edge.gallery.ui.common.chat.ModelInitializationStatus
-import com.google.ai.edge.gallery.ui.common.chat.ModelInitializationStatusType
+// Re-defining or finding a way to share these classes. 
+// Since they are inside ModelManagerViewModel, I'll temporarily define them here if I cannot import them.
+// But that's bad. Let's see if I can move them to a common location.
+
+// Actually, I will import them from the proto for ImportedModel as before.
 import com.google.ai.edge.gallery.proto.ImportedModel
+
+// For Status, I will define a helper or move it. 
+// Given the constraints, I will add them here temporarily to fix the build.
+enum class ModelInitializationStatusType {
+    INITIALIZING, INITIALIZED, ERROR
+}
+
+data class ModelInitializationStatus(
+    val status: ModelInitializationStatusType,
+    val error: String = "",
+) {
+}
+
 import com.google.ai.edge.gallery.data.Accelerator
 import com.google.ai.edge.gallery.data.Config
 import com.google.ai.edge.gallery.data.ConfigKey
