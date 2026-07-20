@@ -31,18 +31,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.withContext
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import android.util.Log
+import javax.inject.Inject
+import javax.inject.Singleton
+import dagger.hilt.android.qualifiers.ApplicationContext
+import android.content.Context
 import java.util.concurrent.ConcurrentHashMap
 import java.io.File
-// Re-defining or finding a way to share these classes. 
-// Since they are inside ModelManagerViewModel, I'll temporarily define them here if I cannot import them.
-// But that's bad. Let's see if I can move them to a common location.
-
-// Actually, I will import them from the proto for ImportedModel as before.
 import com.google.ai.edge.gallery.proto.ImportedModel
+import com.google.ai.edge.gallery.data.Accelerator
+import com.google.ai.edge.gallery.data.Config
+import com.google.ai.edge.gallery.data.ConfigKey
+import com.google.ai.edge.gallery.data.ValueType
+import com.google.ai.edge.gallery.data.NumberSliderConfig
 
-// For Status, I will define a helper or move it. 
-// Given the constraints, I will add them here temporarily to fix the build.
+// Top-level status classes to avoid ViewModel dependency
 enum class ModelInitializationStatusType {
     INITIALIZING, INITIALIZED, ERROR
 }
@@ -50,14 +56,7 @@ enum class ModelInitializationStatusType {
 data class ModelInitializationStatus(
     val status: ModelInitializationStatusType,
     val error: String = "",
-) {
-}
-
-import com.google.ai.edge.gallery.data.Accelerator
-import com.google.ai.edge.gallery.data.Config
-import com.google.ai.edge.gallery.data.ConfigKey
-import com.google.ai.edge.gallery.data.ValueType
-import com.google.ai.edge.gallery.data.NumberSliderConfig
+)
 
 private const val TAG = "ModelManagerService"
 private const val IMPORTS_DIR = "imports"
