@@ -272,7 +272,7 @@ constructor(
   }
 
   fun getCustomTaskByTaskId(id: String): CustomTask? {
-    return getActiveCustomTasks().find { it.task.id == id }
+    return modelManagerService.getCustomTaskByTaskId(id)
   }
 
   fun getActiveCustomTasks(): List<CustomTask> {
