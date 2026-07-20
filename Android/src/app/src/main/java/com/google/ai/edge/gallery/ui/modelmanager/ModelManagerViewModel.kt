@@ -208,55 +208,74 @@ import java.io.FileOutputStream
 
 // ... inside ModelManagerViewModel ...
 
-  fun importModel(
-      fileName: String,
-      fileSize: Long,
-      uri: android.net.Uri,
-      onDone: () -> Unit,
-      onProgress: (Float) -> Unit,
-      onError: (String) -> Unit,
-  ) {
-      viewModelScope.launch(Dispatchers.IO) {
-          val importsDir = File(context.getExternalFilesDir(null), IMPORTS_DIR)
-          if (!importsDir.exists()) importsDir.mkdirs()
+import com.jegly.offlineLLM.smollm.GGUFReader
+import java.io.FileOutputStream
+import java.io.File
+import com.google.ai.edge.gallery.proto.ImportedModel
+import com.google.ai.edge.gallery.proto.LlmConfig
 
-          val outputFile = File(importsDir, fileName)
-          
-          // Copy file
-          val inputStream = context.contentResolver.openInputStream(uri) ?: return@launch onError("Failed to open source")
-          FileOutputStream(outputFile).use { outputStream ->
-              val buffer = ByteArray(8192)
-              var bytesRead: Int
-              var importedBytes = 0L
-              while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                  outputStream.write(buffer, 0, bytesRead)
-                  importedBytes += bytesRead
-                  if (fileSize != 0L) onProgress(importedBytes.toFloat() / fileSize.toFloat())
-              }
-          }
-          inputStream.close()
+// ... (existing imports)
 
-          // Detect context size
-          val ggufReader = GGUFReader()
-          ggufReader.load(outputFile.absolutePath)
-          val maxContext = ggufReader.getContextSize()?.toInt() ?: 4096
-          Log.d(TAG, "Imported model context size: $maxContext")
+@HiltViewModel
+class ModelManagerViewModel @Inject constructor(
+  @ApplicationContext private val context: Context,
+  private val dataStoreRepository: DataStoreRepository,
+  private val downloadRepository: DownloadRepository,
+  // ...
+) : ViewModel() {
+    
+    // ...
 
-          // Persist
-          val currentModels = dataStoreRepository.readImportedModels().toMutableList()
-          val newModel = ImportedModel.newBuilder()
-              .setFileName(fileName)
-              .setFileSize(fileSize)
-              .setLlmConfig(com.google.ai.edge.gallery.proto.LlmConfig.newBuilder()
-                  .setMaxContextSize(maxContext)
-                  .build())
-              .build()
-          currentModels.add(newModel)
-          dataStoreRepository.saveImportedModels(currentModels)
-          
-          onDone()
-      }
-  }
+    fun importModel(
+        fileName: String,
+        fileSize: Long,
+        uri: android.net.Uri,
+        onDone: () -> Unit,
+        onProgress: (Float) -> Unit,
+        onError: (String) -> Unit,
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val importsDir = File(context.getExternalFilesDir(null), "imports")
+            if (!importsDir.exists()) importsDir.mkdirs()
+
+            val outputFile = File(importsDir, fileName)
+            
+            // Copy file
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return@launch onError("Failed to open source")
+            FileOutputStream(outputFile).use { outputStream ->
+                val buffer = ByteArray(8192)
+                var bytesRead: Int
+                var importedBytes = 0L
+                while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                    outputStream.write(buffer, 0, bytesRead)
+                    importedBytes += bytesRead
+                    if (fileSize != 0L) onProgress(importedBytes.toFloat() / fileSize.toFloat())
+                }
+            }
+            inputStream.close()
+
+            // Detect context size
+            val ggufReader = GGUFReader()
+            ggufReader.load(outputFile.absolutePath)
+            val maxContext = ggufReader.getContextSize()?.toInt() ?: 4096
+            Log.d("ModelManagerViewModel", "Imported model context size: $maxContext")
+
+            // Persist
+            val currentModels = dataStoreRepository.readImportedModels().toMutableList()
+            val newModel = ImportedModel.newBuilder()
+                .setFileName(fileName)
+                .setFileSize(fileSize)
+                .setLlmConfig(LlmConfig.newBuilder()
+                    .setMaxContextSize(maxContext)
+                    .build())
+                .build()
+            currentModels.add(newModel)
+            dataStoreRepository.saveImportedModels(currentModels)
+            
+            onDone()
+        }
+    }
+}
 
   override fun onCleared() {
     authService.dispose()
