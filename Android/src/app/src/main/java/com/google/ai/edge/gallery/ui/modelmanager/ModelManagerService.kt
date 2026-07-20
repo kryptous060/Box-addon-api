@@ -29,8 +29,8 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.concurrent.ConcurrentHashMap
-import java.io.File
+import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.withContext
 
 private const val TAG = "ModelManagerService"
 
@@ -40,6 +40,9 @@ class ModelManagerService @Inject constructor(
     private val customTasks: Set<@JvmSuppressWildcards CustomTask>,
     private val dataStoreRepository: DataStoreRepository
 ) {
+
+    // Dedicated dispatcher for heavy model initialization to prevent Ktor server hang
+    private val modelLoaderDispatcher = newFixedThreadPoolContext(1, "ModelLoaderPool")
 
     // Store active models by a unique instanceId
     private val activeModels = ConcurrentHashMap<String, Model>()
@@ -59,18 +62,10 @@ class ModelManagerService @Inject constructor(
         return customTasks.map { it.task }.find { it.id == id }
     }
 
+    // Refresh and return imported models
     private fun getImportedModels(): List<Model> {
-        // Need to replicate createModelFromImportedModelInfo logic or expose it properly.
-        // For simplicity, assuming a helper exists or re-implementing basic logic.
         return dataStoreRepository.readImportedModels().map { info ->
-            Model(
-                name = info.fileName,
-                url = "",
-                sizeInBytes = info.fileSize,
-                downloadFileName = "imports/${info.fileName}",
-                imported = true,
-                runtimeType = RuntimeType.LITERT_LM,
-            )
+            createModelFromImportedModelInfo(info)
         }
     }
 
@@ -90,7 +85,10 @@ class ModelManagerService @Inject constructor(
     fun getActiveModel(instanceId: String): Model? = activeModels[instanceId]
 
     fun getAllModels(): List<Model> {
-        return customTasks.flatMap { it.task.models }
+        // Ensure imported models are included and refreshed
+        val allModels = customTasks.flatMap { it.task.models }.toMutableList()
+        allModels.addAll(getImportedModels())
+        return allModels.distinctBy { it.name }
     }
 
     fun getAllTasks(): List<CustomTask> {
@@ -129,7 +127,8 @@ class ModelManagerService @Inject constructor(
             return
         }
 
-        coroutineScope.launch(Dispatchers.IO) {
+        // Offload to dedicated dispatcher
+        coroutineScope.launch(modelLoaderDispatcher) {
             Log.d(TAG, "DEBUG: initializeModel coroutine started for '${model.name}'")
             model.initializing = true
             updateInitializationStatus(model, ModelInitializationStatus(status = ModelInitializationStatusType.INITIALIZING))
