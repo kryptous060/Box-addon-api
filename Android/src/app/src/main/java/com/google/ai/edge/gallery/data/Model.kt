@@ -171,7 +171,7 @@ data class Model(
   /** Whether the model is LLM or not. */
   val isLlm: Boolean = false,
   val maxContextSize: Int = 4096,
-  )
+
   /** The release stage of the AICore model. */
   val aicoreReleaseStage: AICoreModelReleaseStage? = null,
 
