@@ -32,7 +32,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.withContext
 
+import java.util.concurrent.ConcurrentHashMap
+import java.io.File
+import com.google.ai.edge.gallery.data.ModelInitializationStatus
+import com.google.ai.edge.gallery.data.ModelInitializationStatusType
+import com.google.ai.edge.gallery.data.ImportedModel
+import com.google.ai.edge.gallery.data.Accelerator
+import com.google.ai.edge.gallery.data.Config
+import com.google.ai.edge.gallery.data.ConfigKey
+import com.google.ai.edge.gallery.data.ValueType
+import com.google.ai.edge.gallery.data.NumberSliderConfig
+
 private const val TAG = "ModelManagerService"
+private const val IMPORTS_DIR = "imports"
 
 @Singleton
 class ModelManagerService @Inject constructor(
@@ -49,6 +61,35 @@ class ModelManagerService @Inject constructor(
     
     // Track initialization status of models
     private val modelInitializationStatus = ConcurrentHashMap<String, ModelInitializationStatus>()
+
+    // Required helper, missing previously
+    private fun createModelFromImportedModelInfo(info: ImportedModel): Model {
+        val accelerators: MutableList<Accelerator> =
+            info.llmConfig.compatibleAcceleratorsList
+                .mapNotNull { acceleratorLabel ->
+                    when (acceleratorLabel.trim()) {
+                        Accelerator.GPU.label -> Accelerator.GPU
+                        Accelerator.CPU.label -> Accelerator.CPU
+                        Accelerator.NPU.label -> Accelerator.NPU
+                        else -> null 
+                    }
+                }
+                .toMutableList()
+        val model =
+            Model(
+                name = info.fileName,
+                url = "",
+                sizeInBytes = info.fileSize,
+                downloadFileName = "$IMPORTS_DIR/${info.fileName}",
+                imported = true,
+                runtimeType = RuntimeType.LITERT_LM,
+                accelerators = accelerators,
+                llmMaxToken = info.llmConfig.defaultMaxTokens,
+                maxContextSize = info.llmConfig.maxContextSize,
+            )
+        model.preProcess()
+        return model
+    }
 
     fun getInitializationStatus(modelName: String): ModelInitializationStatus? {
         return modelInitializationStatus[modelName]
