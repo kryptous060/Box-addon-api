@@ -275,7 +275,6 @@ class ModelManagerViewModel @Inject constructor(
             onDone()
         }
     }
-}
 
   override fun onCleared() {
     authService.dispose()
