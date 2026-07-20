@@ -205,6 +205,10 @@ constructor(
   val authService = AuthorizationService(context)
   var curAccessToken: String = ""
 
+  fun setOrchestrationMode(mode: String) {
+    modelManagerService.setOrchestrationMode(mode)
+  }
+
   fun importModel(
       fileName: String,
       fileSize: Long,
