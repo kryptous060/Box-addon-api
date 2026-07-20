@@ -29,7 +29,9 @@ class ModelInitializationService : Service() {
                 
                 if (model != null && task != null) {
                     Log.d("ModelInitService", "Starting background init for $modelName")
-                    modelManagerService.initializeModel(instanceId, task, model, serviceScope)
+                    modelManagerService.initializeModel(instanceId, task, model, serviceScope) { error ->
+                        Log.d("ModelInitService", "Background init finished for $modelName. Error: $error")
+                    }
                 }
             }
         }

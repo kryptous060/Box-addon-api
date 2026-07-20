@@ -43,6 +43,17 @@ class ModelManagerService @Inject constructor(
 
     // Store active models by a unique instanceId
     private val activeModels = ConcurrentHashMap<String, Model>()
+    
+    // Track initialization status of models
+    private val modelInitializationStatus = ConcurrentHashMap<String, ModelInitializationStatus>()
+
+    fun getInitializationStatus(modelName: String): ModelInitializationStatus? {
+        return modelInitializationStatus[modelName]
+    }
+
+    fun updateInitializationStatus(model: Model, status: ModelInitializationStatus) {
+        modelInitializationStatus[model.name] = status
+    }
 
     fun getTaskById(id: String): Task? {
         return customTasks.map { it.task }.find { it.id == id }
@@ -107,41 +118,49 @@ class ModelManagerService @Inject constructor(
         task: Task,
         model: Model,
         coroutineScope: CoroutineScope,
-        onDone: () -> Unit = {},
+        onDone: (error: String) -> Unit = {},
     ) {
         Log.d(TAG, "DEBUG: initializeModel called for instance '$instanceId', model '${model.name}', task '${task.id}'")
+        
+        // Check if already initializing or initialized to prevent redundant work
+        val currentStatus = getInitializationStatus(model.name)?.status
+        if (currentStatus == ModelInitializationStatusType.INITIALIZING) {
+            Log.d(TAG, "Model '${model.name}' is already initializing. Skipping.")
+            return
+        }
+
         coroutineScope.launch(Dispatchers.IO) {
             Log.d(TAG, "DEBUG: initializeModel coroutine started for '${model.name}'")
             model.initializing = true
+            updateInitializationStatus(model, ModelInitializationStatus(status = ModelInitializationStatusType.INITIALIZING))
             
             val onDoneFn: (error: String) -> Unit = { error ->
                 Log.d(TAG, "DEBUG: onDoneFn called for '${model.name}', error: '$error'")
                 model.initializing = false
                 if (model.instance != null) {
                     activeModels[instanceId] = model
+                    updateInitializationStatus(model, ModelInitializationStatus(status = ModelInitializationStatusType.INITIALIZED))
                     Log.d(TAG, "Model '${model.name}' initialized successfully for '$instanceId'")
-                    onDone()
-                } else if (error.isNotEmpty()) {
-                    Log.e(TAG, "Model '${model.name}' failed to initialize: $error")
+                    onDone("")
+                } else {
+                    val errorMessage = error.ifEmpty { "Unknown initialization error" }
+                    updateInitializationStatus(model, ModelInitializationStatus(status = ModelInitializationStatusType.ERROR, error = errorMessage))
+                    Log.e(TAG, "Model '${model.name}' failed to initialize: $errorMessage")
+                    onDone(errorMessage)
                 }
             }
 
-            Log.d(TAG, "DEBUG: Calling getCustomTaskByTaskId for '${task.id}'")
             val customTask = getCustomTaskByTaskId(id = task.id)
-            Log.d(TAG, "DEBUG: CustomTask found: ${customTask != null}")
             
             if (customTask != null) {
-                Log.d(TAG, "DEBUG: Calling initializeModelFn for '${model.name}'")
                 customTask.initializeModelFn(
                     context = context,
                     coroutineScope = coroutineScope,
                     model = model,
-                    onDone = onDoneFn,
+                    onDone = { error -> onDoneFn(error) },
                 )
-                Log.d(TAG, "DEBUG: initializeModelFn returned for '${model.name}'")
             } else {
-                Log.e(TAG, "DEBUG: No CustomTask found for taskId '${task.id}'")
-                onDoneFn("CustomTask not found")
+                onDoneFn("CustomTask not found for taskId '${task.id}'")
             }
         }
     }
