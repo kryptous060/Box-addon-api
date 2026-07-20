@@ -143,33 +143,17 @@ class BoxApiServer : Service() {
                 post("/load-llm") {
                     println("DEBUG: Entering /load-llm")
                     val request = call.receive<LoadModelRequest>()
-                    println("DEBUG: Looking for model: ${request.modelName}, task: ${request.taskId}")
                     
-                    // Explicitly list all available models for debugging
-                    val allModels = modelManagerService.getAllModels()
-                    println("DEBUG: Currently registered models: ${allModels.map { it.name }}")
-                    
-                    val model = modelManagerService.getModelByName(request.modelName)
-                    val task = modelManagerService.getTaskById(request.taskId)
-
-                    if (model != null && task != null) {
-                        println("DEBUG: Model and Task found. Attempting initializeModel")
-                        serviceScope.launch {
-                            try {
-                                println("DEBUG: Calling modelManagerService.initializeModel")
-                                modelManagerService.initializeModel(request.instanceId, task, model, serviceScope)
-                                println("DEBUG: modelManagerService.initializeModel returned")
-                            } catch (e: Exception) {
-                                println("DEBUG: NPU Load Failed: ${e.message}")
-                                e.printStackTrace()
-                            }
-                        }
-                        println("DEBUG: Responding Accepted")
-                        call.respond(HttpStatusCode.Accepted, "{\"status\": \"initializing_in_background\"}")
-                    } else {
-                        println("DEBUG: Failed to find model or task.")
-                        call.respond(HttpStatusCode.NotFound, mapOf("error" to "Model or Task not found"))
+                    // Trigger background initialization via Service
+                    val initIntent = Intent(this@BoxApiServer, ModelInitializationService::class.java).apply {
+                        putExtra("modelName", request.modelName)
+                        putExtra("taskId", request.taskId)
+                        putExtra("instanceId", request.instanceId)
                     }
+                    startService(initIntent)
+                    
+                    println("DEBUG: Responding Accepted")
+                    call.respond(HttpStatusCode.Accepted, "{\"status\": \"initializing_in_background\"}")
                 }
                 get("/model-status/{instanceId}") {
                     val instanceId = call.parameters["instanceId"] ?: ""
