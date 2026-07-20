@@ -34,9 +34,9 @@ import kotlinx.coroutines.withContext
 
 import java.util.concurrent.ConcurrentHashMap
 import java.io.File
-import com.google.ai.edge.gallery.data.ModelInitializationStatus
-import com.google.ai.edge.gallery.data.ModelInitializationStatusType
-import com.google.ai.edge.gallery.data.ImportedModel
+import com.google.ai.edge.gallery.ui.common.chat.ModelInitializationStatus
+import com.google.ai.edge.gallery.ui.common.chat.ModelInitializationStatusType
+import com.google.ai.edge.gallery.proto.ImportedModel
 import com.google.ai.edge.gallery.data.Accelerator
 import com.google.ai.edge.gallery.data.Config
 import com.google.ai.edge.gallery.data.ConfigKey
