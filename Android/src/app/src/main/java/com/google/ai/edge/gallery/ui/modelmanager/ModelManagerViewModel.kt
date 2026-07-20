@@ -87,24 +87,8 @@ private const val ALLOWLIST_BASE_URL =
 
 private const val TEST_MODEL_ALLOW_LIST = ""
 
-data class ModelInitializationStatus(
-  val status: ModelInitializationStatusType,
-  var error: String = "",
-  var initializedBackends: Set<String> = setOf(),
-) {
-  fun isFirstInitialization(model: Model): Boolean {
-    val backend =
-      model.getStringConfigValue(key = ConfigKeys.ACCELERATOR, defaultValue = Accelerator.GPU.label)
-    return !initializedBackends.contains(backend)
-  }
-}
+// Status classes moved to ModelStatus.kt
 
-enum class ModelInitializationStatusType {
-  NOT_INITIALIZED,
-  INITIALIZING,
-  INITIALIZED,
-  ERROR,
-}
 
 enum class TokenStatus {
   NOT_STORED,
