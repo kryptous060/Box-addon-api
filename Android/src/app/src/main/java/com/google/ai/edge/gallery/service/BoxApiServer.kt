@@ -51,6 +51,7 @@ data class LoadModelRequest(val modelName: String, val taskId: String, val insta
 class BoxApiServer : Service() {
 
     @Inject lateinit var modelManagerService: ModelManagerService
+    @Inject lateinit var testModelManager: TestModelManager
     
     // Tracks which instance is currently the orchestrator
     private var orchestratorInstanceId: String = "comm"
@@ -165,8 +166,10 @@ class BoxApiServer : Service() {
                     }
                 }
                 get("/debug-models") {
-                    val models = modelManagerService.getAllModels() // Assuming this exists or needs adjustment
-                    val tasks = modelManagerService.getAllTasks() // Assuming this exists or needs adjustment
+                    println("DEBUG: Triggering diagnostic")
+                    testModelManager.runDiagnostic()
+                    val models = modelManagerService.getAllModels()
+                    val tasks = modelManagerService.getAllTasks()
                     call.respond(HttpStatusCode.OK, mapOf("models" to models.map { it.name }, "tasks" to tasks.map { it.task.id }))
                 }
                 post("/load-image-model") {
