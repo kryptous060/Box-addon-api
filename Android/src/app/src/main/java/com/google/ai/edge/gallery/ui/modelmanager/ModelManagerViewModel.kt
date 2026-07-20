@@ -279,6 +279,7 @@ class ModelManagerViewModel @Inject constructor(
   override fun onCleared() {
     authService.dispose()
   }
+}
 
   fun getTaskById(id: String): Task? {
     return uiState.value.tasks.find { it.id == id }
