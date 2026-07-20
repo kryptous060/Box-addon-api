@@ -54,17 +54,19 @@ import com.google.ai.edge.gallery.data.ValueType
 import com.google.ai.edge.gallery.data.createLlmChatConfigs
 import com.google.ai.edge.gallery.proto.AccessTokenData
 import com.google.ai.edge.gallery.proto.ImportedModel
+import com.google.ai.edge.gallery.proto.LlmConfig
 import com.google.ai.edge.gallery.proto.Theme
 import com.google.ai.edge.gallery.runtime.aicore.AICoreModelHelper
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.jegly.offlineLLM.smollm.GGUFReader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
+import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.inject.Inject
-import kotlin.collections.sortedWith
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -203,86 +205,62 @@ constructor(
   val authService = AuthorizationService(context)
   var curAccessToken: String = ""
 
-import com.jegly.offlineLLM.smollm.GGUFReader
-import java.io.FileOutputStream
+  fun importModel(
+      fileName: String,
+      fileSize: Long,
+      uri: android.net.Uri,
+      onDone: () -> Unit,
+      onProgress: (Float) -> Unit,
+      onError: (String) -> Unit,
+  ) {
+      viewModelScope.launch(Dispatchers.IO) {
+          val importsDir = File(context.getExternalFilesDir(null), "imports")
+          if (!importsDir.exists()) importsDir.mkdirs()
 
-// ... inside ModelManagerViewModel ...
+          val outputFile = File(importsDir, fileName)
+          
+          // Copy file
+          val inputStream = context.contentResolver.openInputStream(uri) ?: return@launch onError("Failed to open source")
+          FileOutputStream(outputFile).use { outputStream ->
+              val buffer = ByteArray(8192)
+              var bytesRead: Int
+              var importedBytes = 0L
+              while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                  outputStream.write(buffer, 0, bytesRead)
+                  importedBytes += bytesRead
+                  if (fileSize != 0L) onProgress(importedBytes.toFloat() / fileSize.toFloat())
+              }
+          }
+          inputStream.close()
 
-import com.jegly.offlineLLM.smollm.GGUFReader
-import java.io.FileOutputStream
-import java.io.File
-import com.google.ai.edge.gallery.proto.ImportedModel
-import com.google.ai.edge.gallery.proto.LlmConfig
+          // Detect context size
+          val ggufReader = GGUFReader()
+          ggufReader.load(outputFile.absolutePath)
+          val maxContext = ggufReader.getContextSize()?.toInt() ?: 4096
+          Log.d(TAG, "Imported model context size: $maxContext")
 
-// ... (existing imports)
-
-@HiltViewModel
-class ModelManagerViewModel @Inject constructor(
-  @ApplicationContext private val context: Context,
-  private val dataStoreRepository: DataStoreRepository,
-  private val downloadRepository: DownloadRepository,
-  // ...
-) : ViewModel() {
-    
-    // ...
-
-    fun importModel(
-        fileName: String,
-        fileSize: Long,
-        uri: android.net.Uri,
-        onDone: () -> Unit,
-        onProgress: (Float) -> Unit,
-        onError: (String) -> Unit,
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val importsDir = File(context.getExternalFilesDir(null), "imports")
-            if (!importsDir.exists()) importsDir.mkdirs()
-
-            val outputFile = File(importsDir, fileName)
-            
-            // Copy file
-            val inputStream = context.contentResolver.openInputStream(uri) ?: return@launch onError("Failed to open source")
-            FileOutputStream(outputFile).use { outputStream ->
-                val buffer = ByteArray(8192)
-                var bytesRead: Int
-                var importedBytes = 0L
-                while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                    outputStream.write(buffer, 0, bytesRead)
-                    importedBytes += bytesRead
-                    if (fileSize != 0L) onProgress(importedBytes.toFloat() / fileSize.toFloat())
-                }
-            }
-            inputStream.close()
-
-            // Detect context size
-            val ggufReader = GGUFReader()
-            ggufReader.load(outputFile.absolutePath)
-            val maxContext = ggufReader.getContextSize()?.toInt() ?: 4096
-            Log.d("ModelManagerViewModel", "Imported model context size: $maxContext")
-
-            // Persist
-            val currentModels = dataStoreRepository.readImportedModels().toMutableList()
-            val newModel = ImportedModel.newBuilder()
-                .setFileName(fileName)
-                .setFileSize(fileSize)
-                .setLlmConfig(LlmConfig.newBuilder()
-                    .setMaxContextSize(maxContext)
-                    .build())
-                .build()
-            currentModels.add(newModel)
-            dataStoreRepository.saveImportedModels(currentModels)
-            
-            onDone()
-        }
-    }
+          // Persist
+          val currentModels = dataStoreRepository.readImportedModels().toMutableList()
+          val newModel = ImportedModel.newBuilder()
+              .setFileName(fileName)
+              .setFileSize(fileSize)
+              .setLlmConfig(LlmConfig.newBuilder()
+                  .setMaxContextSize(maxContext)
+                  .build())
+              .build()
+          currentModels.add(newModel)
+          dataStoreRepository.saveImportedModels(currentModels)
+          
+          onDone()
+      }
+  }
 
   override fun onCleared() {
     authService.dispose()
   }
-}
 
   fun getTaskById(id: String): Task? {
-    return uiState.value.tasks.find { it.id == id }
+    return modelManagerService.getTaskById(id)
   }
 
   fun getTasksByIds(ids: Set<String>): List<Task> {
@@ -612,7 +590,7 @@ class ModelManagerViewModel @Inject constructor(
           initializedBackends
         }
       curStatus[model.name] = status.copy(initializedBackends = newInitializedBackends)
-      _uiState.update { _uiState.value.copy(modelInitializationStatus = curStatus) }
+      _uiState.update { uiState.value.copy(modelInitializationStatus = curStatus) }
     }
   }
 
@@ -623,7 +601,7 @@ class ModelManagerViewModel @Inject constructor(
       if (newHistory.size > TEXT_INPUT_HISTORY_MAX_SIZE) {
         newHistory.removeAt(newHistory.size - 1)
       }
-      _uiState.update { _uiState.value.copy(textInputHistory = newHistory) }
+      _uiState.update { uiState.value.copy(textInputHistory = newHistory) }
       dataStoreRepository.saveTextInputHistory(_uiState.value.textInputHistory)
     } else {
       promoteTextInputHistoryItem(text)
@@ -636,7 +614,7 @@ class ModelManagerViewModel @Inject constructor(
       val newHistory = uiState.value.textInputHistory.toMutableList()
       newHistory.removeAt(index)
       newHistory.add(0, text)
-      _uiState.update { _uiState.value.copy(textInputHistory = newHistory) }
+      _uiState.update { uiState.value.copy(textInputHistory = newHistory) }
       dataStoreRepository.saveTextInputHistory(_uiState.value.textInputHistory)
     }
   }
@@ -646,13 +624,13 @@ class ModelManagerViewModel @Inject constructor(
     if (index >= 0) {
       val newHistory = uiState.value.textInputHistory.toMutableList()
       newHistory.removeAt(index)
-      _uiState.update { _uiState.value.copy(textInputHistory = newHistory) }
+      _uiState.update { uiState.value.copy(textInputHistory = newHistory) }
       dataStoreRepository.saveTextInputHistory(_uiState.value.textInputHistory)
     }
   }
 
   fun clearTextInputHistory() {
-    _uiState.update { _uiState.value.copy(textInputHistory = mutableListOf()) }
+    _uiState.update { uiState.value.copy(textInputHistory = mutableListOf()) }
     dataStoreRepository.saveTextInputHistory(_uiState.value.textInputHistory)
   }
 
@@ -1355,6 +1333,7 @@ class ModelManagerViewModel @Inject constructor(
         // We assume all imported models are LLM for now.
         isLlm = true,
         runtimeType = RuntimeType.LITERT_LM,
+        maxContextSize = info.llmConfig.maxContextSize,
       )
     model.preProcess()
 
@@ -1559,8 +1538,4 @@ class ModelManagerViewModel @Inject constructor(
 
     return downloadedFileExists || unzippedDirectoryExists
   }
-}
-
-private fun getAllowlistUrl(version: String): String {
-  return "$ALLOWLIST_BASE_URL/${version}.json"
 }
