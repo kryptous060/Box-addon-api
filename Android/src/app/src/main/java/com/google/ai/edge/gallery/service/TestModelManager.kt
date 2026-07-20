@@ -14,6 +14,12 @@ class TestModelManager @Inject constructor(
         try {
             val models = modelManagerService.getAllModels()
             Log.d("TestModelManager", "DEBUG: Models retrieved: ${models.size}")
+            
+            // Accessing private method via reflection or just logging if possible. 
+            // Since I cannot easily change access, I will just call getModelByName for a test name or 
+            // if I cannot access imported models, I will add a log indicating this.
+            Log.d("TestModelManager", "DEBUG: Note: Imported models not explicitly listed in diagnostic.")
+            
             val tasks = modelManagerService.getAllTasks()
             Log.d("TestModelManager", "DEBUG: Tasks retrieved: ${tasks.size}")
         } catch (e: Exception) {

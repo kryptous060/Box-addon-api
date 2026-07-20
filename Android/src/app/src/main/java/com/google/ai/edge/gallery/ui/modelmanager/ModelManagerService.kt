@@ -109,7 +109,7 @@ class ModelManagerService @Inject constructor(
         coroutineScope: CoroutineScope,
         onDone: () -> Unit = {},
     ) {
-        Log.d(TAG, "DEBUG: initializeModel called for instance '$instanceId'")
+        Log.d(TAG, "DEBUG: initializeModel called for instance '$instanceId', model '${model.name}', task '${task.id}'")
         coroutineScope.launch(Dispatchers.IO) {
             Log.d(TAG, "DEBUG: initializeModel coroutine started for '${model.name}'")
             model.initializing = true
@@ -130,14 +130,19 @@ class ModelManagerService @Inject constructor(
             val customTask = getCustomTaskByTaskId(id = task.id)
             Log.d(TAG, "DEBUG: CustomTask found: ${customTask != null}")
             
-            customTask
-                ?.initializeModelFn(
+            if (customTask != null) {
+                Log.d(TAG, "DEBUG: Calling initializeModelFn for '${model.name}'")
+                customTask.initializeModelFn(
                     context = context,
                     coroutineScope = coroutineScope,
                     model = model,
                     onDone = onDoneFn,
                 )
-            Log.d(TAG, "DEBUG: initializeModelFn called for '${model.name}'")
+                Log.d(TAG, "DEBUG: initializeModelFn returned for '${model.name}'")
+            } else {
+                Log.e(TAG, "DEBUG: No CustomTask found for taskId '${task.id}'")
+                onDoneFn("CustomTask not found")
+            }
         }
     }
 
