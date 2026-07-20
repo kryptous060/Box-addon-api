@@ -48,15 +48,28 @@ import com.google.ai.edge.gallery.data.ConfigKey
 import com.google.ai.edge.gallery.data.ValueType
 import com.google.ai.edge.gallery.data.NumberSliderConfig
 
-// Top-level status classes to avoid ViewModel dependency
-enum class ModelInitializationStatusType {
-    INITIALIZING, INITIALIZED, ERROR
-}
+import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import android.util.Log
+import javax.inject.Inject
+import javax.inject.Singleton
+import dagger.hilt.android.qualifiers.ApplicationContext
+import android.content.Context
+import java.util.concurrent.ConcurrentHashMap
+import java.io.File
+import com.google.ai.edge.gallery.proto.ImportedModel
+import com.google.ai.edge.gallery.data.Accelerator
+import com.google.ai.edge.gallery.data.Config
+import com.google.ai.edge.gallery.data.ConfigKey
+import com.google.ai.edge.gallery.data.ValueType
+import com.google.ai.edge.gallery.data.NumberSliderConfig
 
-data class ModelInitializationStatus(
-    val status: ModelInitializationStatusType,
-    val error: String = "",
-)
+// Note: ModelInitializationStatus and ModelInitializationStatusType 
+// are imported/accessed from ModelManagerViewModel if they are public.
+// Assuming they are in the same package, they should be visible.
 
 private const val TAG = "ModelManagerService"
 private const val IMPORTS_DIR = "imports"
