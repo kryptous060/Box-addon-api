@@ -83,11 +83,26 @@ class ModelManagerService @Inject constructor(
         return customTasks.map { it.task }.find { it.id == id }
     }
 
-    // Refresh and return imported models
+    // Refresh and return imported models by scanning the directory
     private fun getImportedModels(): List<Model> {
-        return dataStoreRepository.readImportedModels().map { info ->
-            createModelFromImportedModelInfo(info)
+        val externalFilesDir = context.getExternalFilesDir(null) ?: return emptyList()
+        val importsDir = File(externalFilesDir, "__imports") // Note: The directory constant seems to be __imports based on Model.kt, not imports
+        
+        if (!importsDir.exists() || !importsDir.isDirectory) {
+            Log.d(TAG, "Imports directory not found: ${importsDir.absolutePath}")
+            return emptyList()
         }
+
+        return importsDir.listFiles()?.map { file ->
+            Model(
+                name = file.name,
+                url = "",
+                sizeInBytes = file.length(),
+                downloadFileName = "__imports/${file.name}",
+                imported = true,
+                runtimeType = RuntimeType.LITERT_LM,
+            )
+        } ?: emptyList()
     }
 
     fun getModelByName(name: String): Model? {
