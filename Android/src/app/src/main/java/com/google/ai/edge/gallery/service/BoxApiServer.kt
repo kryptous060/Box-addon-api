@@ -172,17 +172,32 @@ class BoxApiServer : Service() {
                     val tasks = modelManagerService.getAllTasks()
                     call.respond(HttpStatusCode.OK, mapOf("models" to models.map { it.name }, "tasks" to tasks.map { it.task.id }))
                 }
-                post("/load-image-model") {
-                    val request = call.receive<LoadModelRequest>()
-                    val model = modelManagerService.getModelByName(request.modelName)
+@Serializable
+data class LoadCustomModelRequest(val filePath: String, val taskId: String, val instanceId: String)
+
+// ... inside the routing block ...
+                post("/load-custom-model") {
+                    val request = call.receive<LoadCustomModelRequest>()
+                    
+                    // Manually construct a Model object from the path
+                    val model = Model(
+                        name = File(request.filePath).name,
+                        url = "",
+                        sizeInBytes = 0, // Size not strictly required for initialization
+                        downloadFileName = request.filePath, // Use path directly
+                        imported = true,
+                        runtimeType = RuntimeType.LITERT_LM
+                    )
+                    
                     val task = modelManagerService.getTaskById(request.taskId)
-                    if (model != null && task != null) {
+                    if (task != null) {
                         modelManagerService.initializeModel(request.instanceId, task, model, serviceScope)
-                        call.respond(HttpStatusCode.OK, mapOf("status" to "loading", "model" to request.modelName))
+                        call.respond(HttpStatusCode.OK, mapOf("status" to "loading", "model" to request.filePath))
                     } else {
-                        call.respond(HttpStatusCode.NotFound, mapOf("error" to "Model or Task not found"))
+                        call.respond(HttpStatusCode.NotFound, mapOf("error" to "Task not found"))
                     }
                 }
+
             }
         }
     }
