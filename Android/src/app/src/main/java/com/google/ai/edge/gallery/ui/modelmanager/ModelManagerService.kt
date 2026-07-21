@@ -187,7 +187,12 @@ class ModelManagerService @Inject constructor(
 
             val customTask = getCustomTaskByTaskId(id = task.id)
             
-            if (customTask != null) {
+            val DEBUG_SKIP_NATIVE_LOAD = true // Temporary flag to verify bottleneck
+            if (DEBUG_SKIP_NATIVE_LOAD) {
+                Log.d(TAG, "DEBUG: Skipping native load for '${model.name}'")
+                // Simulate success
+                onDoneFn("")
+            } else if (customTask != null) {
                 customTask.initializeModelFn(
                     context = context,
                     coroutineScope = coroutineScope,
