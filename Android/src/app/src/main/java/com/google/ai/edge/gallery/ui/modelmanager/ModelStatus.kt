@@ -1,5 +1,9 @@
 package com.google.ai.edge.gallery.ui.modelmanager
 
+import com.google.ai.edge.gallery.data.Model
+import com.google.ai.edge.gallery.data.ConfigKeys
+import com.google.ai.edge.gallery.data.Accelerator
+
 enum class ModelInitializationStatusType {
     NOT_INITIALIZED,
     INITIALIZING,
@@ -15,7 +19,7 @@ data class ModelInitializationStatus(
     fun isFirstInitialization(model: Model): Boolean {
         // Need access to ConfigKeys and Accelerator
         val backend =
-            model.getStringConfigValue(key = com.google.ai.edge.gallery.data.ConfigKeys.ACCELERATOR, defaultValue = com.google.ai.edge.gallery.data.Accelerator.GPU.label)
+            model.getStringConfigValue(key = ConfigKeys.ACCELERATOR, defaultValue = Accelerator.GPU.label)
         return !initializedBackends.contains(backend)
     }
 }

@@ -42,16 +42,6 @@ class ModelManagerService @Inject constructor(
     // Track initialization status of models
     private val modelInitializationStatus = ConcurrentHashMap<String, ModelInitializationStatus>()
 
-
-    // Dedicated dispatcher for heavy model initialization to prevent Ktor server hang
-    private val modelLoaderDispatcher = newFixedThreadPoolContext(1, "ModelLoaderPool")
-
-    // Store active models by a unique instanceId
-    private val activeModels = ConcurrentHashMap<String, Model>()
-    
-    // Track initialization status of models
-    private val modelInitializationStatus = ConcurrentHashMap<String, ModelInitializationStatus>()
-
     // Required helper, missing previously
     private fun createModelFromImportedModelInfo(info: ImportedModel): Model {
         val accelerators: MutableList<Accelerator> =
