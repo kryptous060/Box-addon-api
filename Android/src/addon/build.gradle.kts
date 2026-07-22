@@ -37,4 +37,9 @@ android {
 dependencies {
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.appcompat)
+
+  // Link core engine libraries
+  implementation(project(":smollm"))
+  implementation(project(":stablediffusion"))
+  implementation(project(":whisper"))
 }
