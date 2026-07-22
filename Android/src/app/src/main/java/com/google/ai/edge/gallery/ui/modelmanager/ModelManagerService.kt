@@ -38,6 +38,8 @@ class ModelManagerService @Inject constructor(
 
     // Store active models by a unique instanceId
     private val activeModels = ConcurrentHashMap<String, Model>()
+    // Keep strong references to prevent GC in the background
+    private val persistentModelInstances = ConcurrentHashMap<String, Any>()
     
     // Track initialization status of models
     private val modelInitializationStatus = ConcurrentHashMap<String, ModelInitializationStatus>()
@@ -156,14 +158,6 @@ class ModelManagerService @Inject constructor(
     ) {
         Log.d(TAG, "DEBUG: initializeModel called for instance '$instanceId', model '${model.name}', task '${task.id}'")
         
-        // Check if already initializing or initialized to prevent redundant work
-        val currentStatus = getInitializationStatus(model.name)?.status
-        if (currentStatus == ModelInitializationStatusType.INITIALIZING) {
-            Log.d(TAG, "Model '${model.name}' is already initializing. Skipping.")
-            return
-        }
-
-        // Offload to dedicated dispatcher
         coroutineScope.launch(modelLoaderDispatcher) {
             Log.d(TAG, "DEBUG: initializeModel coroutine started for '${model.name}'")
             model.initializing = true
@@ -173,6 +167,8 @@ class ModelManagerService @Inject constructor(
                 Log.d(TAG, "DEBUG: onDoneFn called for '${model.name}', error: '$error'")
                 model.initializing = false
                 if (model.instance != null) {
+                    // Persist reference to prevent garbage collection
+                    persistentModelInstances[instanceId] = model.instance!!
                     activeModels[instanceId] = model
                     updateInitializationStatus(model, ModelInitializationStatus(status = ModelInitializationStatusType.INITIALIZED))
                     Log.d(TAG, "Model '${model.name}' initialized successfully for '$instanceId'")
@@ -187,12 +183,7 @@ class ModelManagerService @Inject constructor(
 
             val customTask = getCustomTaskByTaskId(id = task.id)
             
-            val DEBUG_SKIP_NATIVE_LOAD = true // Temporary flag to verify bottleneck
-            if (DEBUG_SKIP_NATIVE_LOAD) {
-                Log.d(TAG, "DEBUG: Skipping native load for '${model.name}'")
-                // Simulate success
-                onDoneFn("")
-            } else if (customTask != null) {
+            if (customTask != null) {
                 customTask.initializeModelFn(
                     context = context,
                     coroutineScope = coroutineScope,
