@@ -1,0 +1,57 @@
+﻿2026-07-22T20:29:02.3293835Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-07-22T20:29:02.3295434Z Post job cleanup.
+2026-07-22T20:29:02.4175188Z [command]/usr/bin/git version
+2026-07-22T20:29:02.4216218Z git version 2.54.0
+2026-07-22T20:29:02.4289132Z Temporarily overriding HOME='/home/runner/work/_temp/c9ae7a0b-bea8-4406-9951-da60672b5aa7' before making global git config changes
+2026-07-22T20:29:02.4290447Z Adding repository directory to the temporary git global config as a safe directory
+2026-07-22T20:29:02.4294500Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Box-addon-api/Box-addon-api
+2026-07-22T20:29:02.4337702Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-07-22T20:29:02.4376481Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-07-22T20:29:02.4620826Z Entering 'Android/src/llama.cpp'
+2026-07-22T20:29:02.4679649Z Entering 'Android/src/stable-diffusion.cpp'
+2026-07-22T20:29:02.4723711Z Entering 'Android/src/stable-diffusion.cpp/examples/server/frontend'
+2026-07-22T20:29:02.4772104Z Entering 'Android/src/stable-diffusion.cpp/ggml'
+2026-07-22T20:29:02.4850010Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebm'
+2026-07-22T20:29:02.4910609Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebp'
+2026-07-22T20:29:02.4985638Z Entering 'Android/src/whisper.cpp'
+2026-07-22T20:29:02.5066383Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-07-22T20:29:02.5108932Z http.https://github.com/.extraheader
+2026-07-22T20:29:02.5123892Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-07-22T20:29:02.5173308Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-07-22T20:29:02.5483473Z Entering 'Android/src/llama.cpp'
+2026-07-22T20:29:02.5507375Z http.https://github.com/.extraheader
+2026-07-22T20:29:02.5546146Z Entering 'Android/src/stable-diffusion.cpp'
+2026-07-22T20:29:02.5570691Z http.https://github.com/.extraheader
+2026-07-22T20:29:02.5603854Z Entering 'Android/src/stable-diffusion.cpp/examples/server/frontend'
+2026-07-22T20:29:02.5628769Z http.https://github.com/.extraheader
+2026-07-22T20:29:02.5662343Z Entering 'Android/src/stable-diffusion.cpp/ggml'
+2026-07-22T20:29:02.5687391Z http.https://github.com/.extraheader
+2026-07-22T20:29:02.5722679Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebm'
+2026-07-22T20:29:02.5747785Z http.https://github.com/.extraheader
+2026-07-22T20:29:02.5783201Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebp'
+2026-07-22T20:29:02.5808478Z http.https://github.com/.extraheader
+2026-07-22T20:29:02.5844845Z Entering 'Android/src/whisper.cpp'
+2026-07-22T20:29:02.5869136Z http.https://github.com/.extraheader
+2026-07-22T20:29:02.5922432Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-07-22T20:29:02.5959728Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-07-22T20:29:02.6178383Z Entering 'Android/src/llama.cpp'
+2026-07-22T20:29:02.6197683Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/llama.cpp/config	remote.origin.url
+2026-07-22T20:29:02.6220807Z Entering 'Android/src/stable-diffusion.cpp'
+2026-07-22T20:29:02.6240388Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/config	remote.origin.url
+2026-07-22T20:29:02.6258653Z Entering 'Android/src/stable-diffusion.cpp/examples/server/frontend'
+2026-07-22T20:29:02.6278802Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/examples/server/frontend/config	remote.origin.url
+2026-07-22T20:29:02.6297173Z Entering 'Android/src/stable-diffusion.cpp/ggml'
+2026-07-22T20:29:02.6316309Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/ggml/config	remote.origin.url
+2026-07-22T20:29:02.6337344Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebm'
+2026-07-22T20:29:02.6356586Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/thirdparty/libwebm/config	remote.origin.url
+2026-07-22T20:29:02.6376626Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebp'
+2026-07-22T20:29:02.6395835Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/thirdparty/libwebp/config	remote.origin.url
+2026-07-22T20:29:02.6417281Z Entering 'Android/src/whisper.cpp'
+2026-07-22T20:29:02.6436689Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/whisper.cpp/config	remote.origin.url
+2026-07-22T20:29:02.6487354Z [command]/usr/bin/git config --file /home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/llama.cpp/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-07-22T20:29:02.6524527Z [command]/usr/bin/git config --file /home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-07-22T20:29:02.6563824Z [command]/usr/bin/git config --file /home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/examples/server/frontend/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-07-22T20:29:02.6602818Z [command]/usr/bin/git config --file /home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/ggml/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-07-22T20:29:02.6643534Z [command]/usr/bin/git config --file /home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/thirdparty/libwebm/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-07-22T20:29:02.6682452Z [command]/usr/bin/git config --file /home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/thirdparty/libwebp/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-07-22T20:29:02.6720208Z [command]/usr/bin/git config --file /home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/whisper.cpp/config --name-only --get-regexp ^includeIf\.gitdir:

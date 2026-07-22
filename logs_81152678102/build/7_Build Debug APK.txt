@@ -1,0 +1,44 @@
+﻿2026-07-22T20:28:07.3981843Z ##[group]Run ./gradlew :app:assembleDebug
+2026-07-22T20:28:07.3982203Z [36;1m./gradlew :app:assembleDebug[0m
+2026-07-22T20:28:07.4034824Z shell: /usr/bin/bash -e {0}
+2026-07-22T20:28:07.4035354Z env:
+2026-07-22T20:28:07.4035690Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-22T20:28:07.4036224Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-22T20:28:07.4036617Z   KEYSTORE_PASSWORD: 
+2026-07-22T20:28:07.4036837Z   KEY_ALIAS: 
+2026-07-22T20:28:07.4037038Z   KEY_PASSWORD: 
+2026-07-22T20:28:07.4037239Z ##[endgroup]
+2026-07-22T20:28:07.6943500Z Downloading https://services.gradle.org/distributions/gradle-8.10.2-bin.zip
+2026-07-22T20:28:09.4188941Z .............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%.............100%
+2026-07-22T20:28:10.5818397Z 
+2026-07-22T20:28:10.5819787Z Welcome to Gradle 8.10.2!
+2026-07-22T20:28:10.5820823Z 
+2026-07-22T20:28:10.5821420Z Here are the highlights of this release:
+2026-07-22T20:28:10.5822322Z  - Support for Java 23
+2026-07-22T20:28:10.5825668Z  - Faster configuration cache
+2026-07-22T20:28:10.5826330Z  - Better configuration cache reports
+2026-07-22T20:28:10.5826935Z 
+2026-07-22T20:28:10.5827845Z For more details see https://docs.gradle.org/8.10.2/release-notes.html
+2026-07-22T20:28:10.5828452Z 
+2026-07-22T20:28:10.6827351Z To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+2026-07-22T20:28:11.9846292Z Daemon will be stopped at the end of the build 
+2026-07-22T20:29:01.9813151Z 
+2026-07-22T20:29:01.9814364Z FAILURE: Build failed with an exception.
+2026-07-22T20:29:01.9815349Z 
+2026-07-22T20:29:01.9815777Z * Where:
+2026-07-22T20:29:01.9816791Z Build file '/home/runner/work/Box-addon-api/Box-addon-api/Android/src/addon/build.gradle.kts' line: 1
+2026-07-22T20:29:01.9817787Z 
+2026-07-22T20:29:01.9818124Z * What went wrong:
+2026-07-22T20:29:01.9819105Z An exception occurred applying plugin request [id: 'com.android.application', version: '9.2.0']
+2026-07-22T20:29:01.9820354Z > Failed to apply plugin 'com.android.internal.version-check'.
+2026-07-22T20:29:01.9821404Z    > Minimum supported Gradle version is 9.4.1. Current version is 8.10.2.
+2026-07-22T20:29:01.9823153Z      Try updating the 'distributionUrl' property in /home/runner/work/Box-addon-api/Box-addon-api/Android/src/gradle/wrapper/gradle-wrapper.properties to 'gradle-9.4.1-bin.zip'.
+2026-07-22T20:29:01.9824575Z 
+2026-07-22T20:29:01.9824910Z * Try:
+2026-07-22T20:29:01.9825891Z > Run with --stacktrace option to get the stack trace.
+2026-07-22T20:29:01.9826804Z > Run with --info or --debug option to get more log output.
+2026-07-22T20:29:01.9827619Z > Run with --scan to get full insights.
+2026-07-22T20:29:01.9828406Z > Get more help at https://help.gradle.org.
+2026-07-22T20:29:01.9828989Z 
+2026-07-22T20:29:01.9829335Z BUILD FAILED in 54s
+2026-07-22T20:29:02.1631727Z ##[error]Process completed with exit code 1.

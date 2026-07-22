@@ -1,0 +1,7 @@
+﻿2026-07-22T20:28:07.3814340Z ##[group]Run rm -f gradle/gradle-daemon-jvm.properties
+2026-07-22T20:28:07.3814779Z [36;1mrm -f gradle/gradle-daemon-jvm.properties[0m
+2026-07-22T20:28:07.3866410Z shell: /usr/bin/bash -e {0}
+2026-07-22T20:28:07.3866664Z env:
+2026-07-22T20:28:07.3866992Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-22T20:28:07.3867509Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-22T20:28:07.3867894Z ##[endgroup]

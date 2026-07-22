@@ -1,0 +1,15 @@
+﻿2026-07-22T20:28:02.6449192Z ##[group]Run git submodule sync
+2026-07-22T20:28:02.6449565Z [36;1mgit submodule sync[0m
+2026-07-22T20:28:02.6449914Z [36;1mgit submodule update --init --recursive --force[0m
+2026-07-22T20:28:02.6531024Z shell: /usr/bin/bash -e {0}
+2026-07-22T20:28:02.6531324Z ##[endgroup]
+2026-07-22T20:28:02.6853637Z Synchronizing submodule url for 'Android/src/llama.cpp'
+2026-07-22T20:28:02.6854298Z Synchronizing submodule url for 'Android/src/stable-diffusion.cpp'
+2026-07-22T20:28:02.6854901Z Synchronizing submodule url for 'Android/src/whisper.cpp'
+2026-07-22T20:28:03.4339288Z Submodule path 'Android/src/llama.cpp': checked out '505b1ed15ca80e2a19f12ff4ac365e40fb374053'
+2026-07-22T20:28:05.1619337Z Submodule path 'Android/src/stable-diffusion.cpp': checked out 'a8a91b24cdf18a3e415d7f2a28f69b5be8a17700'
+2026-07-22T20:28:05.1720583Z Submodule path 'Android/src/stable-diffusion.cpp/examples/server/frontend': checked out 'c4bce3d6b3f236614cca21014f076083b7270ba8'
+2026-07-22T20:28:05.3275711Z Submodule path 'Android/src/stable-diffusion.cpp/ggml': checked out 'eced84c86f8b012c752c016f7fe789adea168e1e'
+2026-07-22T20:28:05.3680540Z Submodule path 'Android/src/stable-diffusion.cpp/thirdparty/libwebm': checked out '5bf12267eea773a32fcf4949de52b0add158a8d5'
+2026-07-22T20:28:05.4291664Z Submodule path 'Android/src/stable-diffusion.cpp/thirdparty/libwebp': checked out '0c9546f7efc61eac7f79ae115c3f99c91c21c443'
+2026-07-22T20:28:05.6890389Z Submodule path 'Android/src/whisper.cpp': checked out '080bbbe85230f624f0b52127f1ae1218247989f9'

@@ -1,0 +1,162 @@
+﻿2026-07-22T20:27:34.1954618Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-07-22T20:27:34.1966947Z ##[group]Run actions/checkout@v4
+2026-07-22T20:27:34.1968218Z with:
+2026-07-22T20:27:34.1969039Z   submodules: recursive
+2026-07-22T20:27:34.1970034Z   repository: kryptous060/Box-addon-api
+2026-07-22T20:27:34.1980414Z   token: ***
+2026-07-22T20:27:34.1981264Z   ssh-strict: true
+2026-07-22T20:27:34.1982123Z   ssh-user: git
+2026-07-22T20:27:34.1983002Z   persist-credentials: true
+2026-07-22T20:27:34.1983975Z   clean: true
+2026-07-22T20:27:34.1984885Z   sparse-checkout-cone-mode: true
+2026-07-22T20:27:34.1986098Z   fetch-depth: 1
+2026-07-22T20:27:34.1986970Z   fetch-tags: false
+2026-07-22T20:27:34.1987838Z   show-progress: true
+2026-07-22T20:27:34.1988738Z   lfs: false
+2026-07-22T20:27:34.1989619Z   set-safe-directory: true
+2026-07-22T20:27:34.1990634Z   allow-unsafe-pr-checkout: false
+2026-07-22T20:27:34.1991967Z ##[endgroup]
+2026-07-22T20:27:34.3008604Z Syncing repository: kryptous060/Box-addon-api
+2026-07-22T20:27:34.3012913Z ##[group]Getting Git version info
+2026-07-22T20:27:34.3015698Z Working directory is '/home/runner/work/Box-addon-api/Box-addon-api'
+2026-07-22T20:27:34.3019280Z [command]/usr/bin/git version
+2026-07-22T20:27:34.3096164Z git version 2.54.0
+2026-07-22T20:27:34.3119557Z ##[endgroup]
+2026-07-22T20:27:34.3135338Z Temporarily overriding HOME='/home/runner/work/_temp/4db219ac-1f68-4776-b44c-fb1274080885' before making global git config changes
+2026-07-22T20:27:34.3140368Z Adding repository directory to the temporary git global config as a safe directory
+2026-07-22T20:27:34.3143997Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Box-addon-api/Box-addon-api
+2026-07-22T20:27:34.3233206Z Deleting the contents of '/home/runner/work/Box-addon-api/Box-addon-api'
+2026-07-22T20:27:34.3238593Z ##[group]Initializing the repository
+2026-07-22T20:27:34.3244458Z [command]/usr/bin/git init /home/runner/work/Box-addon-api/Box-addon-api
+2026-07-22T20:27:34.3419987Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-07-22T20:27:34.3422194Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-07-22T20:27:34.3424280Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-07-22T20:27:34.3426996Z hint: call:
+2026-07-22T20:27:34.3428326Z hint:
+2026-07-22T20:27:34.3430051Z hint: 	git config --global init.defaultBranch <name>
+2026-07-22T20:27:34.3432128Z hint:
+2026-07-22T20:27:34.3434073Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-07-22T20:27:34.3437571Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-07-22T20:27:34.3439943Z hint:
+2026-07-22T20:27:34.3440850Z hint: 	git branch -m <name>
+2026-07-22T20:27:34.3441813Z hint:
+2026-07-22T20:27:34.3443073Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-07-22T20:27:34.3445716Z Initialized empty Git repository in /home/runner/work/Box-addon-api/Box-addon-api/.git/
+2026-07-22T20:27:34.3451601Z [command]/usr/bin/git remote add origin https://github.com/kryptous060/Box-addon-api
+2026-07-22T20:27:34.3499698Z ##[endgroup]
+2026-07-22T20:27:34.3502631Z ##[group]Disabling automatic garbage collection
+2026-07-22T20:27:34.3504343Z [command]/usr/bin/git config --local gc.auto 0
+2026-07-22T20:27:34.3548472Z ##[endgroup]
+2026-07-22T20:27:34.3550146Z ##[group]Setting up auth
+2026-07-22T20:27:34.3551708Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-07-22T20:27:34.3596630Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-07-22T20:27:34.4042338Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-07-22T20:27:34.4079661Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-07-22T20:27:34.4308606Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-07-22T20:27:34.4346501Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-07-22T20:27:34.4574636Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-07-22T20:27:34.4614778Z ##[endgroup]
+2026-07-22T20:27:34.4616846Z ##[group]Fetching the repository
+2026-07-22T20:27:34.4625753Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +2df5c10060b1c433cb8a2d38a6c85a7e81fa709d:refs/remotes/origin/main
+2026-07-22T20:27:38.7754397Z From https://github.com/kryptous060/Box-addon-api
+2026-07-22T20:27:38.7755970Z  * [new ref]         2df5c10060b1c433cb8a2d38a6c85a7e81fa709d -> origin/main
+2026-07-22T20:27:38.7795524Z ##[endgroup]
+2026-07-22T20:27:38.7796535Z ##[group]Determining the checkout info
+2026-07-22T20:27:38.7803199Z ##[endgroup]
+2026-07-22T20:27:38.7804021Z [command]/usr/bin/git sparse-checkout disable
+2026-07-22T20:27:38.7856836Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-07-22T20:27:38.7891968Z ##[group]Checking out the ref
+2026-07-22T20:27:38.7897507Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-07-22T20:27:39.4538201Z Switched to a new branch 'main'
+2026-07-22T20:27:39.4548607Z branch 'main' set up to track 'origin/main'.
+2026-07-22T20:27:39.4590973Z ##[endgroup]
+2026-07-22T20:27:39.4592146Z ##[group]Setting up auth for fetching submodules
+2026-07-22T20:27:39.4593405Z [command]/usr/bin/git config --global http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-07-22T20:27:39.4644184Z [command]/usr/bin/git config --global --unset-all url.https://github.com/.insteadOf
+2026-07-22T20:27:39.4690399Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf git@github.com:
+2026-07-22T20:27:39.4766592Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf org-182015985@github.com:
+2026-07-22T20:27:39.4782219Z ##[endgroup]
+2026-07-22T20:27:39.4783558Z ##[group]Fetching submodules
+2026-07-22T20:27:39.4787314Z [command]/usr/bin/git submodule sync --recursive
+2026-07-22T20:27:39.5070270Z [command]/usr/bin/git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
+2026-07-22T20:27:39.5349630Z Submodule 'Android/src/llama.cpp' (https://github.com/ggerganov/llama.cpp.git) registered for path 'Android/src/llama.cpp'
+2026-07-22T20:27:39.5366830Z Submodule 'Android/src/stable-diffusion.cpp' (https://github.com/leejet/stable-diffusion.cpp.git) registered for path 'Android/src/stable-diffusion.cpp'
+2026-07-22T20:27:39.5369104Z Submodule 'Android/src/whisper.cpp' (https://github.com/ggerganov/whisper.cpp.git) registered for path 'Android/src/whisper.cpp'
+2026-07-22T20:27:39.5397347Z Cloning into '/home/runner/work/Box-addon-api/Box-addon-api/Android/src/llama.cpp'...
+2026-07-22T20:27:42.3963806Z Cloning into '/home/runner/work/Box-addon-api/Box-addon-api/Android/src/stable-diffusion.cpp'...
+2026-07-22T20:27:47.6859333Z Cloning into '/home/runner/work/Box-addon-api/Box-addon-api/Android/src/whisper.cpp'...
+2026-07-22T20:27:51.9009249Z From https://github.com/ggerganov/llama.cpp
+2026-07-22T20:27:51.9010734Z  * branch            505b1ed15ca80e2a19f12ff4ac365e40fb374053 -> FETCH_HEAD
+2026-07-22T20:27:52.5060768Z Submodule path 'Android/src/llama.cpp': checked out '505b1ed15ca80e2a19f12ff4ac365e40fb374053'
+2026-07-22T20:27:53.8588462Z From https://github.com/leejet/stable-diffusion.cpp
+2026-07-22T20:27:53.8589660Z  * branch            a8a91b24cdf18a3e415d7f2a28f69b5be8a17700 -> FETCH_HEAD
+2026-07-22T20:27:54.8221300Z Submodule path 'Android/src/stable-diffusion.cpp': checked out 'a8a91b24cdf18a3e415d7f2a28f69b5be8a17700'
+2026-07-22T20:27:54.8243181Z Submodule 'examples/server/frontend' (https://github.com/leejet/sdcpp-webui.git) registered for path 'Android/src/stable-diffusion.cpp/examples/server/frontend'
+2026-07-22T20:27:54.8247280Z Submodule 'ggml' (https://github.com/leejet/ggml.git) registered for path 'Android/src/stable-diffusion.cpp/ggml'
+2026-07-22T20:27:54.8253030Z Submodule 'thirdparty/libwebm' (https://github.com/webmproject/libwebm.git) registered for path 'Android/src/stable-diffusion.cpp/thirdparty/libwebm'
+2026-07-22T20:27:54.8258556Z Submodule 'thirdparty/libwebp' (https://github.com/webmproject/libwebp.git) registered for path 'Android/src/stable-diffusion.cpp/thirdparty/libwebp'
+2026-07-22T20:27:54.8288782Z Cloning into '/home/runner/work/Box-addon-api/Box-addon-api/Android/src/stable-diffusion.cpp/examples/server/frontend'...
+2026-07-22T20:27:55.3352348Z Cloning into '/home/runner/work/Box-addon-api/Box-addon-api/Android/src/stable-diffusion.cpp/ggml'...
+2026-07-22T20:27:57.0233236Z Cloning into '/home/runner/work/Box-addon-api/Box-addon-api/Android/src/stable-diffusion.cpp/thirdparty/libwebm'...
+2026-07-22T20:27:57.9834060Z Cloning into '/home/runner/work/Box-addon-api/Box-addon-api/Android/src/stable-diffusion.cpp/thirdparty/libwebp'...
+2026-07-22T20:27:59.4640004Z Submodule path 'Android/src/stable-diffusion.cpp/examples/server/frontend': checked out 'c4bce3d6b3f236614cca21014f076083b7270ba8'
+2026-07-22T20:27:59.6064264Z Submodule path 'Android/src/stable-diffusion.cpp/ggml': checked out 'eced84c86f8b012c752c016f7fe789adea168e1e'
+2026-07-22T20:28:00.6008875Z From https://github.com/webmproject/libwebm
+2026-07-22T20:28:00.6009980Z  * branch            5bf12267eea773a32fcf4949de52b0add158a8d5 -> FETCH_HEAD
+2026-07-22T20:28:00.6488408Z Submodule path 'Android/src/stable-diffusion.cpp/thirdparty/libwebm': checked out '5bf12267eea773a32fcf4949de52b0add158a8d5'
+2026-07-22T20:28:02.0913438Z From https://github.com/webmproject/libwebp
+2026-07-22T20:28:02.0914362Z  * branch            0c9546f7efc61eac7f79ae115c3f99c91c21c443 -> FETCH_HEAD
+2026-07-22T20:28:02.1357313Z Submodule path 'Android/src/stable-diffusion.cpp/thirdparty/libwebp': checked out '0c9546f7efc61eac7f79ae115c3f99c91c21c443'
+2026-07-22T20:28:02.3276145Z Submodule path 'Android/src/whisper.cpp': checked out '080bbbe85230f624f0b52127f1ae1218247989f9'
+2026-07-22T20:28:02.3313841Z [command]/usr/bin/git submodule foreach --recursive git config --local gc.auto 0
+2026-07-22T20:28:02.3535681Z Entering 'Android/src/llama.cpp'
+2026-07-22T20:28:02.3587315Z Entering 'Android/src/stable-diffusion.cpp'
+2026-07-22T20:28:02.3624615Z Entering 'Android/src/stable-diffusion.cpp/examples/server/frontend'
+2026-07-22T20:28:02.3663630Z Entering 'Android/src/stable-diffusion.cpp/ggml'
+2026-07-22T20:28:02.3703986Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebm'
+2026-07-22T20:28:02.3743176Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebp'
+2026-07-22T20:28:02.3784802Z Entering 'Android/src/whisper.cpp'
+2026-07-22T20:28:02.3846744Z ##[endgroup]
+2026-07-22T20:28:02.3847674Z ##[group]Persisting credentials for submodules
+2026-07-22T20:28:02.3849432Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'url\.https\:\/\/github\.com\/\.insteadOf' && git config --local --unset-all 'url.https://github.com/.insteadOf' || :"
+2026-07-22T20:28:02.4071593Z Entering 'Android/src/llama.cpp'
+2026-07-22T20:28:02.4125576Z Entering 'Android/src/stable-diffusion.cpp'
+2026-07-22T20:28:02.4167936Z Entering 'Android/src/stable-diffusion.cpp/examples/server/frontend'
+2026-07-22T20:28:02.4212490Z Entering 'Android/src/stable-diffusion.cpp/ggml'
+2026-07-22T20:28:02.4258274Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebm'
+2026-07-22T20:28:02.4303235Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebp'
+2026-07-22T20:28:02.4350006Z Entering 'Android/src/whisper.cpp'
+2026-07-22T20:28:02.4410063Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local 'http.https://github.com/.extraheader' 'AUTHORIZATION: basic ***' && git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-07-22T20:28:02.4628431Z Entering 'Android/src/llama.cpp'
+2026-07-22T20:28:02.4670811Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/llama.cpp/config	remote.origin.url
+2026-07-22T20:28:02.4695918Z Entering 'Android/src/stable-diffusion.cpp'
+2026-07-22T20:28:02.4736483Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/config	remote.origin.url
+2026-07-22T20:28:02.4756250Z Entering 'Android/src/stable-diffusion.cpp/examples/server/frontend'
+2026-07-22T20:28:02.4795392Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/examples/server/frontend/config	remote.origin.url
+2026-07-22T20:28:02.4815513Z Entering 'Android/src/stable-diffusion.cpp/ggml'
+2026-07-22T20:28:02.4883716Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/ggml/config	remote.origin.url
+2026-07-22T20:28:02.4885454Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebm'
+2026-07-22T20:28:02.4919717Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/thirdparty/libwebm/config	remote.origin.url
+2026-07-22T20:28:02.4940440Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebp'
+2026-07-22T20:28:02.4979689Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/stable-diffusion.cpp/modules/thirdparty/libwebp/config	remote.origin.url
+2026-07-22T20:28:02.5002772Z Entering 'Android/src/whisper.cpp'
+2026-07-22T20:28:02.5041518Z file:/home/runner/work/Box-addon-api/Box-addon-api/.git/modules/Android/src/whisper.cpp/config	remote.origin.url
+2026-07-22T20:28:02.5145984Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'git@github.com:'
+2026-07-22T20:28:02.5366328Z Entering 'Android/src/llama.cpp'
+2026-07-22T20:28:02.5407267Z Entering 'Android/src/stable-diffusion.cpp'
+2026-07-22T20:28:02.5443731Z Entering 'Android/src/stable-diffusion.cpp/examples/server/frontend'
+2026-07-22T20:28:02.5482631Z Entering 'Android/src/stable-diffusion.cpp/ggml'
+2026-07-22T20:28:02.5523737Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebm'
+2026-07-22T20:28:02.5564016Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebp'
+2026-07-22T20:28:02.5604850Z Entering 'Android/src/whisper.cpp'
+2026-07-22T20:28:02.5659293Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'org-182015985@github.com:'
+2026-07-22T20:28:02.5877845Z Entering 'Android/src/llama.cpp'
+2026-07-22T20:28:02.5921439Z Entering 'Android/src/stable-diffusion.cpp'
+2026-07-22T20:28:02.5959049Z Entering 'Android/src/stable-diffusion.cpp/examples/server/frontend'
+2026-07-22T20:28:02.5998148Z Entering 'Android/src/stable-diffusion.cpp/ggml'
+2026-07-22T20:28:02.6039620Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebm'
+2026-07-22T20:28:02.6079442Z Entering 'Android/src/stable-diffusion.cpp/thirdparty/libwebp'
+2026-07-22T20:28:02.6121312Z Entering 'Android/src/whisper.cpp'
+2026-07-22T20:28:02.6169809Z ##[endgroup]
+2026-07-22T20:28:02.6216390Z [command]/usr/bin/git log -1 --format=%H
+2026-07-22T20:28:02.6242777Z 2df5c10060b1c433cb8a2d38a6c85a7e81fa709d
