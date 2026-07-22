@@ -21,7 +21,7 @@ jobs:
     - name: Install NDK
       run: sdkmanager "ndk;27.0.12077973"
     - name: Build Debug APK
-      run: ./gradlew :addon:assembleDebug
+      run: ./gradlew :addon:assembleDebug -Pandroid.debug.obsoleteApi=true
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
