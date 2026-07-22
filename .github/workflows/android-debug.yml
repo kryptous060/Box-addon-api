@@ -35,9 +35,9 @@ jobs:
         run: rm -f gradle/gradle-daemon-jvm.properties
         working-directory: Android/src
 
-      - name: Build Debug APK
-        run: ./gradlew :addon:assembleDebug -Pandroid.debug.obsoleteApi=true
+    - name: Build Debug APK
         working-directory: Android/src
+        run: ./gradlew :addon:assembleDebug -Pandroid.debug.obsoleteApi=true
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
